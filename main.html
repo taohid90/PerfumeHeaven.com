@@ -1,335 +1,249 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <title>Tinoz - Taohid Islam</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet"/>
-    <script src="https://content.jwplatform.com/libraries/KB5zFt7A.js"></script>
+    <title>Toffe - Credit Bongo Flix</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+
     <style>
+        :root {
+            --primary-bg: #101010;
+            --secondary-bg: #1a1a1a;
+            --text-color: #e0e0e0;
+            --accent-color: #00bcd4;
+            --card-bg: #181818;
+        }
+
         body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
             font-family: 'Poppins', sans-serif;
-            margin: 0;
+            overflow-x: hidden;
         }
-        .fixed-header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: linear-gradient(to bottom, #4a1a3a, transparent);
+
+        /* অরোরা ব্যাকগ্রাউন্ড */
+        .aurora-background {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: radial-gradient(ellipse at top, rgba(0, 188, 212, 0.15), transparent 60%),
+                        radial-gradient(ellipse at bottom, rgba(76, 175, 80, 0.1), transparent 70%);
+            z-index: -1;
+            animation: aurora-flow 20s ease-in-out infinite alternate;
         }
-        .video-player-container {
-            position: relative;
-            width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
+        @keyframes aurora-flow {
+            from { transform: rotate(0deg) scale(1.5); }
+            to { transform: rotate(15deg) scale(1.8); }
         }
-        .jwplayer {
-            width: 100% !important;
-            height: auto !important;
-            aspect-ratio: 16/9;
+
+        /* গ্লাস-মরফিজম নেভিগেশন বার */
+        .navbar-custom {
+            background: rgba(16, 16, 16, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 2rem;
         }
-        .section-hidden {
-            display: none;
-        }
-        .nav-button {
-            transition: all 0.3s ease;
-        }
-        .nav-button.active {
-            border-bottom: 2px solid white;
-            opacity: 1;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(80px, 1fr));
-            gap: 12px;
-            padding: 0 16px;
-        }
-        .grid-container.movies {
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        }
-        .grid-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-        .grid-item img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-        }
-        .carousel-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-        .carousel-image {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .carousel-image.hidden {
-            opacity: 0;
-            position: absolute;
-            top: 0;
-        }
+        .navbar-brand img { width: 110px; }
+        .search-wrapper { position: relative; width: 100%; max-width: 450px; }
+        .search-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: #888; }
         .search-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border-radius: 50px;
+            padding-left: 3rem;
             transition: all 0.3s ease;
         }
+        .search-input:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.2);
+        }
+        .main-content { padding-top: 120px; }
+        
+        /* ক্যাটাগরি ফিল্টার */
+        .category-filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .filter-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        .filter-btn.active { background-color: var(--accent-color); color: var(--primary-bg); border-color: var(--accent-color); }
+
+        /* চ্যানেল কার্ড ডিজাইন */
+        .channel-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .channel-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 0 2px var(--accent-color);
+        }
+        .card-img-wrapper { aspect-ratio: 16 / 9; background-color: #222; display: flex; align-items: center; justify-content: center; }
+        .card-img { width: 100%; height: 100%; object-fit: contain; }
+        .card-body { padding: 0.75rem; }
+        .card-title { font-weight: 600; font-size: 0.9rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .loader-wrapper { display: flex; justify-content: center; align-items: center; height: 300px; width: 100%; }
+        .loader {
+            width: 50px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 8px solid;
+            border-color: #555 #0000;
+            animation: l1 1s infinite;
+        }
+        @keyframes l1 { to { transform: rotate(.5turn) } }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-white">
-    <!-- Header -->
-    <header id="header" class="fixed-header flex items-center justify-between px-4 py-3">
-        <div class="flex items-center space-x-2">
-            <img id="header-logo" alt="Toffee logo, stylized white swirl icon" class="w-8 h-8" height="32" src="https://cdn-icons-png.flaticon.com/128/11710/11710751.png" width="32"/>
-            <span id="header-text" class="text-white font-semibold text-lg tracking-wide">Tinoz</span>
-            <button id="back-button" class="hidden text-white text-lg"><i class="fas fa-arrow-left"></i></button>
-        </div>
-        <div id="header-right">
-            <button id="search-button" class="text-white text-lg"><i class="fas fa-search"></i></button>
-        </div>
-    </header>
+<body>
 
-    <!-- Search Input -->
-    <div id="search-container" class="hidden px-4 py-3 bg-[#1a1a1a]">
-        <div class="flex items-center space-x-2">
-            <input id="search-input" type="text" placeholder="Search..." class="w-full p-2 rounded-lg bg-[#2a2a2a] text-white border-none focus:outline-none"/>
-            <button id="close-search" class="text-white text-lg"><i class="fas fa-times"></i></button>
-        </div>
+<div class="aurora-background"></div>
+
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><img src="https://toffeelive.com/logo.svg" alt="Bongo Flix"/></a>
+    <div class="mx-auto search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="form-control search-input" placeholder="Search channels..." id="inpSearchTV" autocomplete="off">
     </div>
+    <div class="d-none d-lg-block"><a class="btn filter-btn active" href="#">Login</a></div>
+  </div>
+</nav>
 
-    <!-- Video Player -->
-    <div id="video-player-container" class="video-player-container hidden">
-        <div id="jw-player"></div>
+<div class="container-fluid main-content px-4">
+    <div class="category-filters" id="categoryFilters">
+        <button class="filter-btn active" data-category="All">All</button>
+        <button class="filter-btn" data-category="Sports">Sports</button>
+        <button class="filter-btn" data-category="Entertainment">Entertainment</button>
+        <button class="filter-btn" data-category="News">News</button>
+        <button class="filter-btn" data-category="Movies">Movies</button>
     </div>
+    <div id="tvsGrid" class="row g-4">
+        <div class="loader-wrapper"><div class="loader"></div></div>
+    </div>
+</div>
 
-    <!-- Navigation -->
-    <nav id="nav-bar" class="flex space-x-6 px-4 mt-4 text-white font-semibold text-base">
-        <button class="nav-button active" data-section="all">All</button>
-        <button class="nav-button opacity-80" data-section="live">Live TV</button>
-        <button class="nav-button opacity-80" data-section="movies">Movies</button>
-    </nav>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    <!-- Carousel (Visible only in All) -->
-    <section id="carousel-section" class="relative mt-4 px-4">
-        <div class="carousel-container">
-            <img class="carousel-image" alt="Carousel image 1" height="200" src="https://i.postimg.cc/Z5tBhRvp/20250423-223243.jpg" width="600"/>
-            <img class="carousel-image hidden" alt="Carousel image 2" height="200" src="https://i.postimg.cc/QxW9P5Cj/20250423-223337.jpg" width="600"/>
-            <img class="carousel-image hidden" alt="Carousel image 3" height="200" src="https://i.postimg.cc/XNPBQxV2/20250423-223450.jpg" width="600"/>
-            <div aria-label="Next slide" class="absolute right-4 top-1/2 -translate-y-1/2 text-white text-2xl cursor-pointer select-none carousel-control" data-direction="next">></div>
-            <div aria-label="Previous slide" class="absolute left-4 top-1/2 -translate-y-1/2 text-white text-2xl cursor-pointer select-none carousel-control" data-direction="prev"><</div>
-        </div>
-    </section>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY",
+        authDomain: "movie-92659.firebaseapp.com",
+        databaseURL: "https://movie-92659-default-rtdb.firebaseio.com",
+        projectId: "movie-92659",
+        storageBucket: "movie-92659.firebasestorage.app",
+        messagingSenderId: "1090734362509",
+        appId: "1:1090734362509:web:86be5583f6e8fcfdfa77c4",
+        measurementId: "G-XF1TEP0DSJ"
+    };
 
-    <!-- Live Section -->
-    <section id="live-section" class="mt-6 px-4">
-        <div class="flex items-center justify-between mb-2">
-            <h2 class="text-white font-semibold text-lg">Live</h2>
-        </div>
-        <div class="grid-container">
-            <div class="grid-item live-channel cursor-pointer" data-video="https://content.jwplatform.com/videos/sample1.mp4" data-title="IPL Live">
-                <img alt="IPL Live channel logo" class="rounded-full" height="80" src="https://storage.googleapis.com/a1aa/image/43cbfaca-40a5-41ae-85cb-e594ca2a34be.jpg" width="80"/>
-            </div>
-            <div class="grid-item live-channel cursor-pointer" data-video="https://content.jwplatform.com/videos/sample2.mp4" data-title="PSL Live">
-                <img alt="PSL Live channel logo" class="rounded-full" height="80" src="https://storage.googleapis.com/a1aa/image/fef2830e-d7d5-4080-5976-9071df263f80.jpg" width="80"/>
-            </div>
-            <div class="grid-item live-channel cursor-pointer" data-video="https://content.jwplatform.com/videos/sample3.mp4" data-title="ZEE Bangla">
-                <img alt="ZEE Bangla channel logo" class="rounded-full" height="80" src="https://storage.googleapis.com/a1aa/image/1f2c8658-f426-47f3-0820-1f38fc9ffe88.jpg" width="80"/>
-            </div>
-            <div class="grid-item live-channel cursor-pointer" data-video="https://content.jwplatform.com/videos/sample4.mp4" data-title="Sony Sports 1 HD">
-                <img alt="Sony Sports 1 HD channel logo" class="rounded-full" height="80" src="https://storage.googleapis.com/a1aa/image/2a722e4d-4d11-41fd-5d4a-4ace53964864.jpg" width="80"/>
-            </div>
-            <div class="grid-item live-channel cursor-pointer" data-video="https://content.jwplatform.com/videos/sample5.mp4" data-title="Channel 5">
-                <img alt="Channel 5 logo" class="rounded-full" height="80" src="https://storage.googleapis.com/a1aa/image/a533fb8a-d915-4da0-5301-654e38f76eb5.jpg" width="80"/>
-            </div>
-        </div>
-    </section>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const channelsCollection = collection(db, "channels");
+    
+    const tvsGrid = document.getElementById('tvsGrid');
+    const searchInput = document.getElementById('inpSearchTV');
+    const categoryFilters = document.getElementById('categoryFilters');
+    let allChannels = []; // Cache all channels for faster filtering
 
-    <!-- Trending Section -->
-    <section id="trending-section" class="mt-6 px-4">
-        <div class="flex items-center justify-between mb-2">
-            <h2 class="text-white font-semibold text-lg">ট্রেন্ডিং</h2>
-        </div>
-        <div class="grid-container movies">
-            <div class="grid-item movie-item cursor-pointer" data-video="https://content.jwplatform.com/videos/sample6.mp4" data-title="Alif Al Sazol">
-                <img alt="Alif Al Sazol movie poster" height="216" src="https://storage.googleapis.com/a1aa/image/5934cd6b-dcf5-4ff0-8e68-cdc36fc02713.jpg" width="144"/>
-                <div class="absolute bottom-0 w-full text-center text-white text-xs font-semibold py-1 bg-gradient-to-r from-purple-600 to-pink-500">Recently Added</div>
-            </div>
-            <div class="grid-item movie-item cursor-pointer" data-video="https://content.jwplatform.com/videos/sample7.mp4" data-title="Disaster Scene">
-                <img alt="Soldier helping woman injured in disaster scene movie poster" height="216" src="https://storage.googleapis.com/a1aa/image/6949f2b6-ddb3-44d0-6035-63c79e7f0e5d.jpg" width="144"/>
-                <div class="absolute bottom-0 w-full text-center text-white text-xs font-semibold py-1 bg-gradient-to-r from-purple-600 to-pink-500">Recently Added</div>
-            </div>
-            <div class="grid-item movie-item cursor-pointer" data-video="https://content.jwplatform.com/videos/sample8.mp4" data-title="Jurassic">
-                <img alt="Jurassic movie poster" height="216" src="https://storage.googleapis.com/a1aa/image/3d23acd2-ba56-4c11-d1b3-da55a3c7cfd1.jpg" width="144"/>
-            </div>
-        </div>
-    </section>
-
-    <!-- Bollywood Section -->
-    <section id="bollywood-section" class="mt-6 px-4 mb-6">
-        <div class="flex items-center justify-between mb-2">
-            <h2 class="text-white font-semibold text-lg">বলিউড</h2>
-        </div>
-        <div class="grid-container movies">
-            <div class="grid-item movie-item cursor-pointer" data-video="https://content.jwplatform.com/videos/sample9.mp4" data-title="Halla Bol">
-                <img alt="Halla Bol movie poster" height="216" src="https://storage.googleapis.com/a1aa/image/6e1b0354-c6a5-4c7f-5522-a194bbfd0c93.jpg" width="144"/>
-            </div>
-            <div class="grid-item movie-item cursor-pointer" data-video="https://content.jwplatform.com/videos/sample10.mp4" data-title="Anukul">
-                <img alt="Anukul movie poster" height="216" src="https://storage.googleapis.com/a1aa/image/a7bef0c7-0f7a-496d-9e5a-1c1186849782.jpg" width="144"/>
-            </div>
-            <div class="grid-item movie-item cursor-pointer" data-video="https://content.jwplatform.com/videos/sample11.mp4" data-title="Gol">
-                <img alt="Gol movie poster" height="216" src="https://storage.googleapis.com/a1aa/image/f71e5053-f87e-4be6-3850-a4977dcc6954.jpg" width="144"/>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        let playerInstance = null;
-        const navButtons = document.querySelectorAll('.nav-button');
-        const sections = {
-            all: ['carousel-section', 'live-section', 'trending-section', 'bollywood-section'],
-            live: ['live-section'],
-            movies: ['trending-section', 'bollywood-section']
-        };
-        let currentSection = 'all';
-        let carouselIndex = 0;
-        const carouselImages = document.querySelectorAll('.carousel-image');
-        let carouselInterval;
-
-        // Carousel animation
-        function startCarousel() {
-            carouselInterval = setInterval(() => {
-                carouselImages[carouselIndex].classList.add('hidden');
-                carouselIndex = (carouselIndex + 1) % carouselImages.length;
-                carouselImages[carouselIndex].classList.remove('hidden');
-            }, 3000);
+    const renderChannels = (channels) => {
+        if (!channels || channels.length === 0) {
+            tvsGrid.innerHTML = '<h3 class="text-center text-muted w-100 py-5">No channels found.</h3>';
+            return;
         }
-
-        function stopCarousel() {
-            clearInterval(carouselInterval);
-        }
-
-        function showCarouselImage(index) {
-            stopCarousel();
-            carouselImages[carouselIndex].classList.add('hidden');
-            carouselIndex = index;
-            carouselImages[carouselIndex].classList.remove('hidden');
-            startCarousel();
-        }
-
-        document.querySelectorAll('.carousel-control').forEach(control => {
-            control.addEventListener('click', () => {
-                const direction = control.dataset.direction;
-                let newIndex = direction === 'next' ? carouselIndex + 1 : carouselIndex - 1;
-                if (newIndex < 0) newIndex = carouselImages.length - 1;
-                if (newIndex >= carouselImages.length) newIndex = 0;
-                showCarouselImage(newIndex);
-            });
+        
+        let lmtl = '';
+        channels.forEach((channel, index) => {
+            lmtl += `
+                <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6">
+                    <div class="channel-card" style="animation-delay: ${index * 30}ms" onclick="playlivetv('${channel.id}')" title="Watch ${channel.title} Live">
+                        <div class="card-img-wrapper"><img class="card-img" src="${channel.logo}" alt="${channel.title}"/></div>
+                        <div class="card-body"><h5 class="card-title">${channel.title}</h5></div>
+                    </div>
+                </div>`;
         });
-
-        // Navigation button handling
-        navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                navButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.classList.add('opacity-80');
-                });
-                button.classList.add('active');
-                button.classList.remove('opacity-80');
-
-                const section = button.dataset.section;
-                currentSection = section;
-                updateSections(section);
-            });
-        });
-
-        // Update visible sections
-        function updateSections(section) {
-            document.querySelectorAll('section').forEach(sec => sec.classList.add('section-hidden'));
-            sections[section].forEach(id => {
-                document.getElementById(id).classList.remove('section-hidden');
-            });
-            document.getElementById('carousel-section').classList.toggle('section-hidden', section !== 'all' || playerInstance);
-            if (section === 'all' && !playerInstance) startCarousel();
-            else stopCarousel();
+        tvsGrid.innerHTML = lmtl;
+    };
+    
+    const fetchAndCacheChannels = async () => {
+        try {
+            tvsGrid.innerHTML = '<div class="loader-wrapper"><div class="loader"></div></div>';
+            const q = query(channelsCollection, orderBy("title"));
+            const snapshot = await getDocs(q);
+            allChannels = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderChannels(allChannels);
+        } catch (error) {
+            console.error("Error loading channels: ", error);
+            tvsGrid.innerHTML = '<h3 class="text-center text-danger w-100 py-5">Error: Could not load channels.</h3>';
         }
+    };
 
-        // Video player setup
-        function setupVideoPlayer(videoUrl) {
-            if (playerInstance) {
-                playerInstance.remove();
+    const filterChannels = (category) => {
+        document.querySelector('.filter-btn.active').classList.remove('active');
+        document.querySelector(`.filter-btn[data-category="${category}"]`).classList.add('active');
+        
+        if (category === 'All') {
+            renderChannels(allChannels);
+        } else {
+            const filtered = allChannels.filter(ch => ch.category === category);
+            renderChannels(filtered);
+        }
+    };
+    
+    let debounceTimer;
+    const searchTVlist = () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+            const searchText = searchInput.value.trim().toLowerCase();
+            document.querySelector('.filter-btn.active').classList.remove('active');
+            document.querySelector('.filter-btn[data-category="All"]').classList.add('active');
+
+            if (!searchText) {
+                renderChannels(allChannels);
+                return;
             }
-            document.getElementById('video-player-container').classList.remove('hidden');
-            document.getElementById('header-logo').classList.add('hidden');
-            document.getElementById('header-text').classList.add('hidden');
-            document.getElementById('back-button').classList.remove('hidden');
-            document.getElementById('nav-bar').classList.add('hidden');
-            document.getElementById('carousel-section').classList.add('section-hidden');
+            
+            const filtered = allChannels.filter(ch => ch.search_keywords.includes(searchText));
+            renderChannels(filtered);
+        }, 300);
+    };
+    
+    window.playlivetv = (channelId) => { window.location.href = `player.html?id=${channelId}`; };
 
-            playerInstance = jwplayer('jw-player').setup({
-                file: videoUrl,
-                width: '100%',
-                aspectratio: '16:9',
- nightly: true,
-                controls: true
-            });
-
-            updateSections(currentSection);
+    searchInput.addEventListener('keyup', searchTVlist);
+    categoryFilters.addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+            filterChannels(e.target.dataset.category);
         }
-
-        // Back button handler
-        document.getElementById('back-button').addEventListener('click', () => {
-            if (playerInstance) {
-                playerInstance.remove();
-                playerInstance = null;
-            }
-            document.getElementById('video-player-container').classList.add('hidden');
-            document.getElementById('header-logo').classList.remove('hidden');
-            document.getElementById('header-text').classList.remove('hidden');
-            document.getElementById('back-button').classList.add('hidden');
-            document.getElementById('nav-bar').classList.remove('hidden');
-            updateSections(currentSection);
-        });
-
-        // Channel and movie click handlers
-        document.querySelectorAll('.live-channel, .movie-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const videoUrl = item.dataset.video;
-                setupVideoPlayer(videoUrl);
-            });
-        });
-
-        // Search functionality
-        document.getElementById('search-button').addEventListener('click', () => {
-            document.getElementById('header').classList.add('hidden');
-            document.getElementById('search-container').classList.remove('hidden');
-            document.getElementById('search-input').focus();
-        });
-
-        document.getElementById('close-search').addEventListener('click', () => {
-            document.getElementById('header').classList.remove('hidden');
-            document.getElementById('search-container').classList.add('hidden');
-            document.getElementById('search-input').value = '';
-            filterContent('');
-        });
-
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            filterContent(e.target.value.toLowerCase());
-        });
-
-        function filterContent(query) {
-            document.querySelectorAll('.grid-item').forEach(item => {
-                const title = item.dataset.title.toLowerCase();
-                item.classList.toggle('section-hidden', query && !title.includes(query));
-            });
-        }
-
-        // Initial setup
-        updateSections('all');
-        startCarousel();
-    </script>
+    });
+    
+    fetchAndCacheChannels();
+</script>
 </body>
 </html>
