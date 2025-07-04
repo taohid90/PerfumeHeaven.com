@@ -1,0 +1,248 @@
+<!-- player.html (চূড়ান্ত এবং কার্যকরী সংস্করণ) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Playing - Bongo Flix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-color: #00bcd4;
+            --primary-bg: #101010;
+            --secondary-bg: #1a1a1a;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--primary-bg); }
+        .player-wrapper { position: relative; width: 100%; padding-top: 56.25%; background-color: #000; }
+        .player-wrapper iframe, .player-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .action-btn { transition: all 0.2s ease-in-out; }
+        .action-btn:hover, .action-btn.active { color: var(--accent-color); transform: translateY(-2px); }
+        .related-card { background-color: var(--secondary-bg); transition: transform 0.3s ease; }
+        .related-card:hover { transform: translateY(-5px); }
+
+        /* কমেন্ট সেকশন স্টাইল */
+        #comment-section {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 75%;
+            background-color: #141414; border-top: 1px solid #282828;
+            transform: translateY(100%); transition: transform 0.4s ease-in-out; z-index: 100;
+        }
+        #comment-section.open { transform: translateY(0); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        #comment-input { background-color: #2a2a2a; border: 1px solid #444; }
+        #comment-input:focus { border-color: var(--accent-color); box-shadow: none; }
+        #comment-submit-btn { background-color: var(--accent-color); }
+    </style>
+</head>
+<body class="bg-black text-gray-200">
+
+    <a href="main.html" class="absolute top-4 left-4 z-50 bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center text-white hover:bg-opacity-75 transition-colors">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <main class="w-full pb-16">
+        <section id="player-container" class="w-full bg-black">
+            <div class="player-wrapper flex items-center justify-center"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-cyan-500"></div></div>
+        </section>
+
+        <section id="channel-info" class="p-4 md:px-6 border-b border-gray-800"></section>
+        
+        <section id="action-bar" class="p-4 md:px-6 flex items-center justify-between text-gray-400">
+            <div class="flex items-center space-x-6">
+                <button id="like-btn" class="action-btn flex items-center space-x-2"><i class="far fa-thumbs-up text-xl"></i><span id="like-count">0</span></button>
+                <button id="dislike-btn" class="action-btn flex items-center space-x-2"><i class="far fa-thumbs-down text-xl"></i><span id="dislike-count">0</span></button>
+                <button id="comment-btn" class="action-btn flex items-center space-x-2"><i class="far fa-comment-alt text-xl"></i><span>Comment</span></button>
+            </div>
+            <button id="report-btn" class="action-btn flex items-center space-x-2"><i class="far fa-flag text-xl"></i><span>Report</span></button>
+        </section>
+
+        <section id="related-channels" class="p-4 md:p-6">
+             <h3 class="text-white text-xl font-semibold mb-4">You Might Also Like</h3>
+             <div id="related-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+        </section>
+    </main>
+    
+    <!-- কমেন্ট সেকশন -->
+    <section id="comment-section" class="flex flex-col">
+        <header class="p-4 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
+            <h3 class="text-lg font-semibold">Comments</h3>
+            <button id="close-comments-btn" class="text-2xl hover:text-cyan-400 transition-colors">×</button>
+        </header>
+        <div id="comments-list" class="flex-grow p-4 overflow-y-auto scrollbar-hide"></div>
+        <form id="comment-form" class="p-4 border-t border-gray-700 flex items-center flex-shrink-0">
+            <input id="comment-input" type="text" class="w-full text-white rounded-l-md p-2 focus:outline-none" placeholder="Add a comment...">
+            <button id="comment-submit-btn" type="submit" class="text-white p-2 rounded-r-md hover:bg-cyan-600 transition-colors">Send</button>
+        </form>
+    </section>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, collection, query, where, limit, updateDoc, increment, getDocs, documentId, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        
+        // আপনার Firebase কনফিগারেশন এখানে পেস্ট করুন
+        const firebaseConfig = {
+            apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY",
+            authDomain: "movie-92659.firebaseapp.com",
+            databaseURL: "https://movie-92659-default-rtdb.firebaseio.com",
+            projectId: "movie-92659",
+            storageBucket: "movie-92659.firebasestorage.app",
+            messagingSenderId: "1090734362509",
+            appId: "1:1090734362509:web:86be5583f6e8fcfdfa77c4",
+            measurementId: "G-XF1TEP0DSJ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const playerContainer = document.getElementById('player-container'), channelInfoContainer = document.getElementById('channel-info'), relatedContainer = document.getElementById('related-container'), likeBtn = document.getElementById('like-btn'), dislikeBtn = document.getElementById('dislike-btn'), reportBtn = document.getElementById('report-btn'), likeCountSpan = document.getElementById('like-count'), dislikeCountSpan = document.getElementById('dislike-count'), commentBtn = document.getElementById('comment-btn'), commentSection = document.getElementById('comment-section'), closeCommentsBtn = document.getElementById('close-comments-btn'), commentForm = document.getElementById('comment-form'), commentInput = document.getElementById('comment-input'), commentsList = document.getElementById('comments-list');
+        let channelRef, commentsCollectionRef;
+
+        // শক্তিশালী প্লেয়ার ফাংশন
+        function createFinalPlayer(streamUrl, posterUrl) {
+            const lowerCaseUrl = streamUrl.toLowerCase();
+            let playerHtml;
+            const directVideoExtensions = ['.mp4', '.mkv', '.webm', '.ogg', '.ogv', '.m3u8'];
+            const isDirectVideo = directVideoExtensions.some(ext => lowerCaseUrl.endsWith(ext));
+
+            if (isDirectVideo) {
+                if(lowerCaseUrl.endsWith('.m3u8')) {
+                     playerHtml = `<iframe src="https://www.hlsplayer.net/hls-player.php?url=${encodeURIComponent(streamUrl)}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+                } else {
+                     playerHtml = `<video controls autoplay poster="${posterUrl}"><source src="${streamUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
+                }
+            } else { // Assume it's an embeddable iframe URL
+                playerHtml = `<iframe src="${streamUrl}" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`;
+            }
+            playerContainer.innerHTML = `<div class="player-wrapper">${playerHtml}</div>`;
+        }
+        
+        async function loadRelatedChannels(category, currentId) {
+            relatedContainer.innerHTML = '';
+            try {
+                const q = query(collection(db, `channels`), where("category", "==", category), where(documentId(), "!=", currentId), limit(6));
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) { relatedContainer.innerHTML = '<p class="text-gray-500 col-span-full text-center">No related channels found.</p>'; return; }
+                
+                snapshot.forEach(doc => {
+                    const ch = doc.data();
+                    relatedContainer.innerHTML += `
+                        <a href="player.html?id=${doc.id}" class="related-card block rounded-lg overflow-hidden">
+                            <div class="aspect-video bg-gray-800 flex items-center justify-center"><img src="${ch.logo}" alt="${ch.title}" class="h-full w-full object-contain"></div>
+                            <p class="text-center text-sm font-semibold p-2 truncate">${ch.title}</p>
+                        </a>`;
+                });
+            } catch (error) { console.error("Error loading related channels:", error); }
+        }
+
+        async function loadChannelData() {
+            const channelId = new URLSearchParams(window.location.search).get('id');
+            if (!channelId) {
+                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Error: Channel ID missing in URL.</p></div>';
+                return;
+            }
+
+            channelRef = doc(db, "channels", channelId);
+            commentsCollectionRef = collection(db, `channels/${channelId}/comments`);
+            
+            let isFirstLoad = true;
+            onSnapshot(channelRef, (docSnap) => {
+                if (!docSnap.exists()) {
+                    playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Sorry, this channel could not be found.</p></div>';
+                    return;
+                }
+                
+                const channel = docSnap.data();
+                if (isFirstLoad) {
+                    createFinalPlayer(channel.streamUrl, channel.logo);
+                    document.title = `Playing ${channel.title} - Bongo Flix`;
+                    channelInfoContainer.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold">${channel.title}</h1><span class="inline-block mt-2 bg-cyan-500 bg-opacity-20 text-cyan-400 text-xs font-semibold px-2.5 py-0.5 rounded-full">${channel.category}</span>`;
+                    loadRelatedChannels(channel.category, channelId);
+                    setupActionHandlers(channelId);
+                    setupCommentSection();
+                    isFirstLoad = false;
+                }
+                likeCountSpan.textContent = channel.likes || 0;
+                dislikeCountSpan.textContent = channel.dislikes || 0;
+                updateActionButtonsUI(channelId);
+            }, (error) => {
+                console.error("Error listening to channel data:", error);
+                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Error loading channel data.</p></div>';
+            });
+        }
+
+        function setupActionHandlers(id) {
+            const key = `bongo_flix_action_${id}`;
+            likeBtn.onclick = () => handleVote('likes', key);
+            dislikeBtn.onclick = () => handleVote('dislikes', key);
+            reportBtn.onclick = () => {
+                if (confirm("Are you sure you want to report this channel?")) {
+                    updateDoc(channelRef, { reports: increment(1) }).then(() => alert("Thank you for your report."));
+                }
+            };
+        }
+
+        async function handleVote(type, key) {
+            const current = localStorage.getItem(key);
+            const opposite = type === 'likes' ? 'dislikes' : 'likes';
+            let updates = {};
+            if (current === type) {
+                updates[type] = increment(-1);
+                localStorage.removeItem(key);
+            } else {
+                updates[type] = increment(1);
+                if (current) { updates[opposite] = increment(-1); }
+                localStorage.setItem(key, type);
+            }
+            await updateDoc(channelRef, updates);
+        }
+
+        function updateActionButtonsUI(id) {
+            const current = localStorage.getItem(`bongo_flix_action_${id}`);
+            likeBtn.classList.toggle('active', current === 'likes');
+            dislikeBtn.classList.toggle('active', current === 'dislikes');
+        }
+
+        function setupCommentSection() {
+            commentBtn.onclick = () => commentSection.classList.add('open');
+            closeCommentsBtn.onclick = () => commentSection.classList.remove('open');
+            
+            commentForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const text = commentInput.value.trim();
+                if (text) {
+                    commentInput.disabled = true;
+                    await addDoc(commentsCollectionRef, { text, author: "Anonymous User", createdAt: serverTimestamp() });
+                    commentInput.value = '';
+                    commentInput.disabled = false;
+                    commentInput.focus();
+                }
+            };
+            listenForComments();
+        }
+
+        function listenForComments() {
+            const q = query(commentsCollectionRef, orderBy('createdAt', 'desc'));
+            onSnapshot(q, (snapshot) => {
+                commentsList.innerHTML = '';
+                if (snapshot.empty) {
+                    commentsList.innerHTML = '<p class="text-gray-500 text-center mt-8">Be the first to comment!</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const comment = doc.data();
+                    const date = comment.createdAt?.toDate().toLocaleString() || 'just now';
+                    const commentEl = document.createElement('div');
+                    commentEl.className = 'border-b border-gray-700 py-3';
+                    commentEl.innerHTML = `<div class="flex items-start space-x-3"><i class="fas fa-user-circle text-2xl text-gray-400"></i><div><p class="font-semibold text-gray-100">${comment.author} <span class="text-xs text-gray-500 ml-2 font-normal">${date}</span></p><p class="text-gray-300">${comment.text}</p></div></div>`;
+                    commentsList.appendChild(commentEl);
+                });
+            });
+        }
+        
+        loadChannelData();
+    </script>
+</body>
+</html>
