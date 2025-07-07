@@ -11,6 +11,8 @@
         body { font-family: 'Baloo 2', cursive; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Player এর জন্য wrapper */
         .player-wrapper {
              position: relative; width: 100%; padding-top: 56.25%; background-color: #000;
         }
@@ -18,6 +20,8 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
         }
         .player-wrapper video { object-fit: cover; }
+
+        /* Action বাটন এর জন্য স্টাইল */
         .action-btn {
             transition: all 0.2s ease-in-out;
         }
@@ -28,6 +32,8 @@
         .action-btn.active {
             color: #1DB954;
         }
+        
+        /* কমেন্ট সেকশন এর জন্য স্টাইল */
         #comment-section {
             position: fixed; bottom: 0; left: 0; right: 0; height: 70%;
             background-color: #121212; border-top: 1px solid #282828;
@@ -36,21 +42,27 @@
         #comment-section.open {
             transform: translateY(0);
         }
-        .related-movie-card img { transition: transform 0.3s ease-in-out; }
-        .related-movie-card:hover img { transform: scale(1.05); }
+
+        /* Related মুভি কার্ড এর জন্য hover এফেক্ট */
+        .related-card img { transition: transform 0.3s ease-in-out; }
+        .related-card:hover img { transform: scale(1.05); }
     </style>
 </head>
 <body class="bg-black text-white">
 
-    <main class="w-full pb-16">
-        <section id="player-container" class="w-full bg-black">
-            <div class="player-wrapper flex items-center justify-center">
-                <i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i>
-            </div>
-        </section>
+    <!-- প্লেয়ার সেকশন (Full Width) -->
+    <section id="player-container" class="w-full bg-black">
+        <div class="player-wrapper flex items-center justify-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i>
+        </div>
+    </section>
 
-        <section id="action-bar" class="p-4 md:px-6 flex items-center justify-between text-gray-400 border-b border-gray-800">
-            <div class="flex space-x-6">
+    <!-- *** সমাধান: একটি কন্টেইনারের মধ্যে মূল কন্টেন্ট রাখা হয়েছে যাতে লেআউট ঠিক থাকে *** -->
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+
+        <!-- *** সমাধান: Action Bar এখন responsive। ছোট স্ক্রিনে বাটনগুলো নিচে নিচে আসবে *** -->
+        <section id="action-bar" class="py-4 flex flex-wrap gap-4 items-center justify-between text-gray-400 border-b border-gray-800">
+            <div class="flex items-center space-x-6">
                 <button id="like-btn" class="action-btn flex items-center space-x-2">
                     <i class="far fa-thumbs-up text-xl"></i>
                     <span id="like-count">0</span>
@@ -70,23 +82,23 @@
             </button>
         </section>
 
-        <section id="movie-info" class="p-4 md:p-6"></section>
+        <section id="movie-info" class="py-6"></section>
 
-        <section id="related-movies" class="p-4 md:p-6">
-             <h3 class="text-white text-lg font-semibold mb-3">Related Movies</h3>
-             <div id="related-movies-container" class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2"></div>
+        <section id="related-content" class="py-6">
+             <h3 id="related-title" class="text-white text-lg font-semibold mb-3">Related</h3>
+             <div id="related-content-container" class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2"></div>
         </section>
     </main>
 
     <section id="comment-section" class="flex flex-col">
         <header class="p-4 border-b border-gray-700 flex justify-between items-center">
             <h3 class="text-lg font-semibold">Comments</h3>
-            <button id="close-comments-btn" class="text-2xl">×</button>
+            <button id="close-comments-btn" class="text-2xl hover:text-white text-gray-400 transition-colors">×</button>
         </header>
         <div id="comments-list" class="flex-grow p-4 overflow-y-auto"></div>
         <form id="comment-form" class="p-4 border-t border-gray-700 flex items-center">
-            <input id="comment-input" type="text" class="w-full bg-gray-800 text-white rounded-l-md p-2 focus:outline-none" placeholder="Add a comment...">
-            <button type="submit" class="bg-green-600 text-white p-2 rounded-r-md hover:bg-green-700">Send</button>
+            <input id="comment-input" type="text" class="w-full bg-gray-800 text-white rounded-l-md p-2 focus:outline-none focus:ring-2 focus:ring-green-600" placeholder="Add a comment...">
+            <button type="submit" class="bg-green-600 text-white p-2 rounded-r-md hover:bg-green-700 transition-colors">Send</button>
         </form>
     </section>
     
@@ -94,65 +106,77 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, updateDoc, increment, getDocs, where, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         
+        // Firebase কনফিগারেশন অপরিবর্তিত
         const firebaseConfig = { apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY", authDomain: "movie-92659.firebaseapp.com", projectId: "movie-92659", storageBucket: "movie-92659.appspot.com", messagingSenderId: "1090734362509", appId: "1:1090734362509:web:86be5583f6e8fcfdfa77c4" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // DOM এলিমেন্টগুলো ধরা
         const playerContainer = document.getElementById('player-container');
         const movieInfoContainer = document.getElementById('movie-info');
-        const relatedMoviesContainer = document.getElementById('related-movies-container');
+        const relatedContentContainer = document.getElementById('related-content-container');
+        const relatedTitle = document.getElementById('related-title');
         const likeBtn = document.getElementById('like-btn'), dislikeBtn = document.getElementById('dislike-btn'), commentBtn = document.getElementById('comment-btn'), reportBtn = document.getElementById('report-btn');
         const likeCountSpan = document.getElementById('like-count'), dislikeCountSpan = document.getElementById('dislike-count');
         const commentSection = document.getElementById('comment-section'), closeCommentsBtn = document.getElementById('close-comments-btn'), commentForm = document.getElementById('comment-form'), commentInput = document.getElementById('comment-input'), commentsList = document.getElementById('comments-list');
 
         let movieRef;
-        
-        // *** নতুন পরিবর্তন: এই ভেরিয়েবলটি প্লেয়ার রিলোড হওয়া আটকাবে ***
-        let isFirstLoad = true; 
+        let isFirstLoad = true; // এই ভেরিয়েবলটি প্লেয়ারকে বার বার রিলোড হওয়া থেকে আটকায়
 
         function createFinalPlayer(videoUrl, posterUrl) {
             const lowerCaseUrl = videoUrl.toLowerCase();
             let playerHtml;
-            const directVideoExtensions = ['.mp4', '.mkv', '.webm', '.ogg', '.ogv'];
+            const directVideoExtensions = ['.mp4', '.mkv', 'webm', '.ogg', '.ogv'];
             const isDirectVideo = directVideoExtensions.some(ext => lowerCaseUrl.endsWith(ext)) || lowerCaseUrl.includes('r2.dev');
 
             if (isDirectVideo) {
-                playerHtml = `<video controls autoplay poster="${posterUrl}"><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
+                playerHtml = `<video controls autoplay poster="${posterUrl}" class="w-full h-full"><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
             } else {
                 playerHtml = `<iframe src="${videoUrl}" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`;
             }
             playerContainer.innerHTML = `<div class="player-wrapper">${playerHtml}</div>`;
         }
         
-        async function loadRelatedMovies(path, currentMovieId) {
-            relatedMoviesContainer.innerHTML = '<p class="text-gray-500">Loading related movies...</p>';
+        async function loadRelatedContent(path, currentMovieId) {
+            relatedContentContainer.innerHTML = '<p class="text-gray-500">Loading related content...</p>';
             try {
-                const relatedCollectionPath = path.substring(0, path.lastIndexOf('/'));
-                const moviesQuery = query(collection(db, relatedCollectionPath), where("__name__", "!=", currentMovieId), limit(10));
-                const moviesSnapshot = await getDocs(moviesQuery);
+                // path থেকে কালেকশনের নাম বের করা (e.g., movies/123 -> movies)
+                const collectionPath = path.substring(0, path.lastIndexOf('/'));
+                const contentQuery = query(collection(db, collectionPath), where("__name__", "!=", currentMovieId), limit(10));
+                const snapshot = await getDocs(contentQuery);
 
-                relatedMoviesContainer.innerHTML = '';
-                if (moviesSnapshot.empty) { relatedMoviesContainer.innerHTML = '<p class="text-gray-500">No related movies found.</p>'; return; }
+                relatedContentContainer.innerHTML = '';
+                if (snapshot.empty) { 
+                    relatedContentContainer.innerHTML = '<p class="text-gray-500">No related content found.</p>'; 
+                    return; 
+                }
                 
-                moviesSnapshot.forEach(movieDoc => {
-                    const movie = movieDoc.data();
-                    const movieCard = document.createElement('div');
-                    movieCard.className = 'flex-shrink-0 w-28 related-movie-card';
-                    movieCard.innerHTML = `<a href="?id=${relatedCollectionPath}/${movieDoc.id}"><img alt="${movie.title}" class="rounded-md w-full h-40 object-cover" src="${movie.posterUrl}" /><p class="text-gray-300 text-xs mt-1 truncate">${movie.title}</p></a>`;
-                    relatedMoviesContainer.appendChild(movieCard);
+                snapshot.forEach(docSnap => {
+                    const content = docSnap.data();
+                    const card = document.createElement('div');
+                    card.className = 'flex-shrink-0 w-32 md:w-36 related-card';
+                    card.innerHTML = `<a href="?id=${collectionPath}/${docSnap.id}">
+                                        <img alt="${content.title || content.name}" class="rounded-md w-full h-44 md:h-48 object-cover" src="${content.posterUrl || content.logoUrl}" />
+                                        <p class="text-gray-300 text-sm mt-1 truncate">${content.title || content.name}</p>
+                                      </a>`;
+                    relatedContentContainer.appendChild(card);
                 });
             } catch (error) {
-                relatedMoviesContainer.innerHTML = '<p class="text-red-500">Could not load related movies.</p>';
+                console.error("Error loading related content: ", error);
+                relatedContentContainer.innerHTML = '<p class="text-red-500">Could not load related content.</p>';
             }
         }
         
         async function loadMovieData() {
-            movieInfoContainer.innerHTML = '<p class="text-gray-400">Loading movie details...</p>';
+            movieInfoContainer.innerHTML = '<p class="text-gray-400">Loading details...</p>';
             const urlParams = new URLSearchParams(window.location.search);
             const fullIdPath = urlParams.get('id');
             
             if (!fullIdPath || fullIdPath.split('/').length < 2) {
-                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Error: Invalid or missing content ID.</p></div>';
+                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Error: Invalid content ID provided in URL.</p></div>';
+                document.getElementById('action-bar').style.display = 'none';
+                document.getElementById('movie-info').style.display = 'none';
+                document.getElementById('related-content').style.display = 'none';
                 return;
             }
             
@@ -165,31 +189,32 @@
                     return;
                 }
                 const movie = docSnap.data();
+                const isLiveTv = fullIdPath.startsWith('liveTV');
 
-                // *** নতুন পরিবর্তন: শুধুমাত্র প্রথমবার প্লেয়ার লোড হবে ***
+                // শুধুমাত্র প্রথমবার লোড হওয়ার সময় এই কাজগুলো হবে
                 if (isFirstLoad) {
                     createFinalPlayer(movie.videoUrl || movie.streamUrl, movie.posterUrl || movie.logoUrl);
                     document.title = `Playing ${movie.title || movie.name} - CrickStar`;
-                    movieInfoContainer.innerHTML = `<h1 class="text-3xl md:text-4xl font-bold mb-2">${movie.title || movie.name}</h1><p class="text-gray-300 max-w-3xl">${movie.description || 'No description available.'}</p>`;
+                    movieInfoContainer.innerHTML = `<h1 class="text-2xl md:text-3xl font-bold mb-2">${movie.title || movie.name}</h1><p class="text-gray-300">${movie.description || 'No description available.'}</p>`;
                     
-                    if (!fullIdPath.startsWith('liveTV')) {
-                        loadRelatedMovies(fullIdPath, movieId);
-                    } else {
-                        document.getElementById('related-movies').style.display = 'none';
-                    }
+                    // *** সমাধান: liveTV-এর জন্য Related কন্টেন্ট লোড করা হবে ***
+                    // এখন আর কোনো if/else নেই, সব ধরনের কন্টেন্টের জন্যেই related ফাংশন কল হবে
+                    relatedTitle.textContent = isLiveTv ? 'Other Channels' : 'Related Movies';
+                    loadRelatedContent(fullIdPath, movieId);
 
                     setupActionHandlers(fullIdPath);
                     setupCommentSection(fullIdPath);
-                    isFirstLoad = false; // পরেরবার থেকে আর প্লেয়ার লোড হবে না
+                    isFirstLoad = false; // এর পরে আর প্লেয়ার রিলোড হবে না
                 }
 
-                // *** এই অংশটি প্রতিবার আপডেট হবে ***
+                // এই অংশটি সবসময় আপডেট হবে (যেমন লাইক সংখ্যা)
                 likeCountSpan.textContent = movie.likes || 0;
                 dislikeCountSpan.textContent = movie.dislikes || 0;
                 updateActionButtonsUI(fullIdPath);
 
             }, (error) => {
-                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500">Error loading data.</p></div>';
+                console.error("Firebase snapshot error: ", error);
+                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500">Error loading data. Please try again later.</p></div>';
             });
         }
 
@@ -197,7 +222,7 @@
             const storageKey = `crickstar_action_${path.replace(/\//g, '_')}`;
             likeBtn.onclick = () => handleVote('likes', storageKey);
             dislikeBtn.onclick = () => handleVote('dislikes', storageKey);
-            reportBtn.onclick = () => { if (confirm("Are you sure?")) { updateDoc(movieRef, { reports: increment(1) }).then(() => alert("Reported.")); } };
+            reportBtn.onclick = () => { if (confirm("Are you sure you want to report this content?")) { updateDoc(movieRef, { reports: increment(1) }).then(() => alert("Content reported successfully. Thank you!")); } };
         }
 
         async function handleVote(voteType, storageKey) {
@@ -233,7 +258,8 @@
                     commentInput.disabled = true;
                     await addDoc(commentsCollectionRef, { text, author: "Anonymous", createdAt: serverTimestamp() });
                     commentInput.value = '';
-                    commentInput.disabled = false; commentInput.focus();
+                    commentInput.disabled = false; 
+                    commentInput.focus();
                 }
             };
             listenForComments(commentsCollectionRef);
@@ -242,14 +268,14 @@
         function listenForComments(commentsCollectionRef) {
             const q = query(commentsCollectionRef, orderBy('createdAt', 'desc'));
             onSnapshot(q, (snapshot) => {
-                if (snapshot.empty) { commentsList.innerHTML = '<p class="text-gray-500 text-center">No comments yet.</p>'; return; }
+                if (snapshot.empty) { commentsList.innerHTML = '<p class="text-gray-500 text-center py-4">Be the first to comment!</p>'; return; }
                 commentsList.innerHTML = '';
                 snapshot.forEach(doc => {
                     const comment = doc.data();
                     const date = comment.createdAt?.toDate().toLocaleString() || 'just now';
                     const commentEl = document.createElement('div');
                     commentEl.className = 'border-b border-gray-700 py-3';
-                    commentEl.innerHTML = `<div class="flex items-start space-x-3"><i class="fas fa-user-circle text-2xl text-gray-400"></i><div><p class="font-semibold">${comment.author} <span class="text-xs text-gray-500 ml-2">${date}</span></p><p class="text-gray-300">${comment.text}</p></div></div>`;
+                    commentEl.innerHTML = `<div class="flex items-start space-x-3"><i class="fas fa-user-circle text-2xl text-gray-400"></i><div><p class="font-semibold">${comment.author} <span class="text-xs text-gray-500 ml-2">${date}</span></p><p class="text-gray-300 break-words">${comment.text}</p></div></div>`;
                     commentsList.appendChild(commentEl);
                 });
             });
