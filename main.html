@@ -5,530 +5,360 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title>Ti Sports - The Unlimited Entertainment Here</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary-color: #ff4f00;
-            --primary-color-hover: #e04500;
             --bg-dark: #0a0a0a;
-            --bg-content: #141414;
             --card-bg: #1a1a1a;
-            --font-main: 'Manrope', sans-serif;
+            --font-main: 'Poppins', sans-serif;
             --accent-green: #4ade80; 
-            --accent-green-glow: rgba(74, 222, 128, 0.3);
         }
         html { scroll-behavior: smooth; }
         body { 
-            font-family: var(--font-main); 
+            font-family: var(--font-main);
             background-color: var(--bg-dark);
-            background-image: radial-gradient(circle at top, #181818 0%, var(--bg-dark) 40%);
             color: #f0f0f0;
         }
-        body.overflow-hidden { overflow: hidden; }
-        .font-display { font-family: var(--font-main); font-weight: 800; letter-spacing: -0.03em; }
-
-        .main-header {
-            background: linear-gradient(to bottom, rgba(20, 20, 20, 0.9), rgba(10, 10, 10, 0.7));
-            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        #app-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        .header-btn {
-            display: flex; align-items: center; justify-content: center;
-            width: 42px; height: 42px;
-            background-color: rgba(34, 34, 34, 0.8);
-            border-radius: 50%;
-            transition: all 0.3s;
+        main { 
+            flex-grow: 1;
+            padding-bottom: 70px;
         }
-        .header-btn:hover { background-color: var(--primary-color); transform: scale(1.05); }
-
-        .tab-bar {
-            background-color: var(--bg-dark);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-        }
-        .tab-button {
-            opacity: 0.6;
-            transition: opacity 0.3s, border-color 0.3s;
-            border-bottom: 3px solid transparent;
-            padding-top: 0.5rem; padding-bottom: 0.5rem;
-        }
-        .tab-button.active {
-            opacity: 1;
-            border-bottom-color: var(--primary-color);
-        }
-        .tab-button img {
-            height: 22px;
-            filter: grayscale(100%) brightness(1.5);
-            transition: filter 0.3s;
-        }
-        .tab-button.active img, .tab-button:hover img {
-            filter: grayscale(0%) brightness(1);
-        }
-
+        
+        /* --- new style --- */
+        .main-header { background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+        
         #banner-container { height: 56.25vw; max-height: 450px; min-height: 220px; }
         .swiper-slide { background-color: #1f1f1f; }
+        .swiper-slide a { display: block; width: 100%; height: 100%; position: relative; }
+        .swiper-slide a::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(10, 10, 10, 0.8), transparent); z-index: 1; }
         .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .swiper-pagination-bullet { background-color: #fff; opacity: 0.5; }
-        .swiper-pagination-bullet-active { background-color: var(--primary-color); opacity: 1; }
-        .swiper-button-prev, .swiper-button-next {
-            color: #fff; background-color: rgba(0,0,0,0.3); width: 40px; height: 40px;
-            border-radius: 50%; transition: opacity 0.3s; opacity: 0;
+        .swiper-pagination-bullet-active { background-color: var(--primary-color); }
+        
+        /* play icon */
+        .banner-play-icon {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 79, 0, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            animation: pulse-play 2s infinite;
+            transform: scale(1);
+            transition: transform 0.3s ease;
         }
-        #banner-container:hover .swiper-button-prev, #banner-container:hover .swiper-button-next { opacity: 1; }
-        .swiper-button-prev:after, .swiper-button-next:after { font-size: 18px; font-weight: 800; }
-
-        .banner-play-button {
-            position: absolute; bottom: 25px; right: 25px; z-index: 10;
-            width: 50px; height: 50px; background-color: rgba(255, 79, 0, 0.9);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 20px; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 79, 0, 0.5);
-            transition: all 0.3s ease; animation: pulse 2s infinite;
-        }
-        .banner-play-button:hover {
-            transform: scale(1.1); background-color: var(--primary-color);
-            animation-play-state: paused;
-        }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 79, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0); } }
-
-        .section-title-wrapper {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;
-        }
-        .section-title {
-            display: flex; align-items: center; gap: 0.75rem;
-        }
-        .section-title .accent-bar {
-            width: 5px; height: 24px; background-color: var(--primary-color); border-radius: 99px;
-        }
-        .section-title h2 {
-            font-family: var(--font-main); font-weight: 800; letter-spacing: -0.03em;
-            font-size: 1.5rem; color: #f0f0f0;
+        .swiper-slide a:hover .banner-play-icon { transform: scale(1.1); }
+        @keyframes pulse-play {
+            0% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 79, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 79, 0, 0); }
         }
 
-        .content-card {
-            background-color: var(--card-bg); border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            border: 1px solid transparent;
-        }
-        .content-card:hover { 
-            transform: translateY(-8px) scale(1.02); z-index: 10;
-            border-color: var(--accent-green);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 15px var(--accent-green-glow);
-        }
+        .section-title-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .section-title { display: flex; align-items: center; gap: 0.75rem; }
+        .section-title .accent-bar { width: 5px; height: 24px; background-color: var(--primary-color); border-radius: 99px; }
+        .section-title h2 { font-weight: 700; font-size: 1.25rem; }
 
-        .live-tv-channel {
-            display: block; position: relative; transition: transform 0.3s ease;
-        }
-        .live-tv-channel:hover { transform: scale(1.1); }
-        .live-tv-channel img {
-            width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 50%;
-            border: 2px solid var(--accent-green); background-color: #222;
-            box-shadow: 0 0 15px var(--accent-green-glow);
-        }
-
+        .content-card { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
+        .content-card:hover { border-color: var(--accent-green); transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
         .card-img-container { position: relative; }
-        .card-img-container::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); opacity: 0.8; }
-        .play-icon-overlay { opacity: 0; transition: opacity 0.3s ease; }
+        .play-icon-overlay { position: absolute; inset: 0; background-color: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
         .content-card:hover .play-icon-overlay { opacity: 1; }
-        .shimmer { background: linear-gradient(90deg, #222222 25%, #333333 50%, #222222 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
-        @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-        .badge { position: absolute; top: 10px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 7px; text-transform: uppercase; line-height: 1.2; backdrop-filter: blur(5px); }
-        .badge-hd { right: 10px; background-color: rgba(255, 79, 0, 0.8); color: white; }
-        .badge-new { left: 10px; background-color: rgba(59, 130, 246, 0.8); color: white; }
-        .badge-live { left: 10px; background-color: rgba(239, 68, 68, 0.8); color: white; }
-        #scroll-top-btn { position: fixed; bottom: 20px; right: 20px; opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.3s; z-index: 50; }
-        #scroll-top-btn.visible { opacity: 1; visibility: visible; transform: translateY(0); }
-        #grid-page-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); z-index: 100; overflow-y: auto; animation: slideInUp 0.4s ease-out; }
-        @keyframes slideInUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        #search-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(10, 10, 10, 0.9); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 200; display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .play-icon-overlay .main-play-icon { font-size: 40px; color: white; }
+        
+        .live-tv-channel { display: block; position: relative; transition: transform 0.3s ease; }
+        .live-tv-channel:hover { transform: scale(1.05); }
+        .live-tv-channel img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 50%; border: 2px solid var(--accent-green); }
+        
+        .badge { position: absolute; top: 10px; left: 10px; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 7px; backdrop-filter: blur(5px); color: white; }
+        .badge-live { background-color: rgba(239, 68, 68, 0.85); display: flex; align-items: center; gap: 5px; }
+        .live-dot { width: 7px; height: 7px; background-color: #fff; border-radius: 50%; animation: live-pulse 1.5s infinite; }
+        @keyframes live-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-around; align-items: center; z-index: 50; }
+        .nav-button { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #888; font-size: 11px; font-weight: 500; transition: color 0.3s, transform 0.3s; flex: 1; }
+        .nav-button:hover { color: #fff; }
+        .nav-button.active { color: var(--primary-color); }
+        .nav-button i, .nav-button img { font-size: 20px; height: 22px; transition: transform 0.3s; }
+        .nav-button.active i, .nav-button.active img { transform: scale(1.1); }
+        .nav-button img { filter: grayscale(100%) brightness(1.2); }
+        .nav-button.active img { filter: none; }
+        
+        .page-content { display: none; animation: contentFadeIn 0.4s; }
+        .page-content.active { display: block; }
+        @keyframes contentFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* lal */
+        #search-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(10, 10, 10, 0.9); backdrop-filter: blur(16px); z-index: 200; display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
         body.search-overlay-active #search-overlay { display: flex; opacity: 1; }
-        #search-input::placeholder { color: #777; }
-        .page-content { display: none; }
-        .page-content.active { display: block; animation: contentFadeIn 0.5s ease-out; }
-        @keyframes contentFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .search-result-item { display: flex; align-items: center; padding: 10px; margin-bottom: 10px; background-color: rgba(255,255,255,0.05); border-radius: 8px; transition: background-color 0.3s; }
+        .search-result-item:hover { background-color: rgba(255,255,255,0.1); }
+        .search-result-item img { width: 50px; height: 75px; object-fit: cover; border-radius: 4px; margin-right: 15px; }
+
+        #grid-page-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); z-index: 100; overflow-y: auto; }
+
+        /* taohid (Shimmer Effect) */
+        .shimmer { background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
+        @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+        .skeleton-card { border-radius: 12px; overflow: hidden; background-color: var(--card-bg); }
+        .skeleton-card .img { height: 0; padding-bottom: 150%; background-color: #2a2a2a; } /* 2:3 aspect ratio */
+        .skeleton-card .img.thumbnail { padding-bottom: 56.25%; } /* 16:9 aspect ratio */
+        .skeleton-card .title { height: 20px; margin-top: 8px; background-color: #2a2a2a; border-radius: 4px; width: 80%; }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-bg-dark text-white">
+<body>
     <div id="app-shell">
         <header class="main-header flex items-center justify-between px-4 h-[60px] sticky top-0 z-40">
-            <a href="index.html">
-                <img alt="Ti Sports logo" class="w-40 h-14" src="https://i.postimg.cc/SRYtqSbc/In-Shot-20250707-012011529-unscreen.gif" />
-            </a>
-            <button id="search-open-btn" aria-label="Search" class="header-btn text-lg text-gray-200">
+            <a href="index.html"><img alt="Ti Sports logo" class="w-40 h-14" src="https://i.postimg.cc/6qMQ8v3k/20250707-181310.png" /></a>
+            <!-- done 2 -->
+            <button id="search-open-btn" aria-label="Search" class="text-2xl text-gray-300 hover:text-[var(--primary-color)] transition-colors">
                 <i class="fas fa-search"></i>
             </button>
         </header>
 
-        <nav class="tab-bar flex items-center justify-around px-2 sticky top-[60px] z-30">
-             <button data-target="cricket-page" class="tab-button active flex-1">
-                <img src="https://cdn-icons-png.flaticon.com/128/2160/2160064.png" alt="Cricket" class="mx-auto" />
-             </button>
-             <button data-target="livetv-page" class="tab-button flex-1">
-                <img src="https://cdn-icons-png.flaticon.com/128/1170/1170586.png" alt="Live TV" class="mx-auto" />
-             </button>
-             <button data-target="movies-page" class="tab-button flex-1">
-                 <img src="https://cdn-icons-png.flaticon.com/128/777/777242.png" alt="Movies" class="mx-auto" />
-             </button>
-        </nav>
-
-        <section id="banner-container" class="relative w-full bg-card-bg group">
-            <div class="swiper h-full">
-                <div class="swiper-wrapper" id="banner-wrapper">
-                    <div class="swiper-slide shimmer"></div>
-                </div>
-                <div class="swiper-pagination"></div>
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-            </div>
-            <a id="banner-play-link" href="#" class="banner-play-button">
-                <i class="fas fa-play pl-1"></i>
-            </a>
-        </section>
-
         <main class="p-4 md:p-6">
-            <div id="cricket-page" class="page-content active space-y-12"></div>
+            <div id="home-page" class="page-content active">
+                <section id="banner-container" class="relative w-full bg-card-bg group mb-8 rounded-lg overflow-hidden">
+                    <div class="shimmer w-full h-full"></div>
+                </section>
+                <!-- done -->
+                <div id="home-sections-container" class="space-y-8">
+                    <!-- Skeleton Loader এখানে যুক্ত হবে -->
+                </div>
+            </div>
             <div id="livetv-page" class="page-content"></div>
-            <div id="movies-page" class="page-content space-y-12"></div>
+            <div id="cricket-page" class="page-content"></div>
+            <div id="movies-page" class="page-content"></div>
         </main>
         
-        <footer class="ti-footer bg-[#0B0B0B] text-gray-300 pt-10 pb-6 text-sm">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
-
-    .ti-footer {
-      font-family: 'Inter', sans-serif !important;
-    }
-
-    .ti-footer .logo {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ti-footer .logo i {
-      color: #00FFD1;
-      font-size: 1.4rem;
-    }
-
-    .ti-footer .subscribe-box {
-      background-color: #121212;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-    }
-
-    .ti-footer .subscribe-box input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 8px;
-      color: #fff;
-      font-size: 0.9rem;
-    }
-
-    .ti-footer .subscribe-box button {
-      background: #00FFD1;
-      color: #000;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .ti-footer .subscribe-box button:hover {
-      background: #00e6ba;
-    }
-
-    .ti-footer .social-icons a {
-      color: #aaa;
-      margin-right: 12px;
-      font-size: 1.2rem;
-      transition: color 0.3s ease, transform 0.3s ease;
-    }
-
-    .ti-footer .social-icons a:hover {
-      color: #00FFD1;
-      transform: scale(1.2);
-    }
-
-    .ti-footer .footer-credit {
-      text-align: center;
-      color: #666;
-      font-size: 0.8rem;
-      margin-top: 20px;
-    }
-
-    .ti-footer .footer-credit i {
-      color: #999;
-      margin: 0 4px;
-    }
-  </style>
-
-  <div class="max-w-4xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-    <!-- Logo -->
-    <div class="logo">
-      <i class="fas fa-play-circle"></i> ｔ𝒾 ｓ𝐏𝓸ｒｔｓ
+        <footer class="bg-[#0B0B0B] text-gray-400 pt-10 pb-7 text-sm mt-auto"></footer>
     </div>
-
-    <!-- Subscribe Box -->
-    <div class="subscribe-box w-full md:w-auto">
-      <input type="email" placeholder="Your email address" />
-      <button><i class="fas fa-paper-plane mr-1"></i>Subscribe</button>
-    </div>
-
-    <!-- Social Icons -->
-    <div class="social-icons flex justify-center md:justify-end w-full md:w-auto">
-      <a href="#"><i class="fab fa-facebook-f"></i></a>
-      <a href="#"><i class="fab fa-youtube"></i></a>
-      <a href="#"><i class="fab fa-telegram-plane"></i></a>
-    </div>
-  </div>
-
-  <!-- Footer Credit -->
-  <div class="footer-credit mt-6">
-    © 2025 ｔ𝒾 ｓ𝐏𝓸ｒｔｓ <i class="fas fa-code"></i> Developed by Md. Taohid Islam
-  </div>
-
-  <!-- FontAwesome -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</footer>
-    </div>
+    
+    <nav class="bottom-nav">
+        <button data-target="home-page" class="nav-button active"><i class="fas fa-home"></i> Home</button>
+        <button data-target="livetv-page" class="nav-button"><i class="fas fa-tv"></i> Live TV</button>
+        <button data-target="cricket-page" class="nav-button"><img src="https://cdn-icons-png.flaticon.com/128/2160/2160064.png" alt="Cricket" /> Cricket</button>
+        <button data-target="movies-page" class="nav-button"><i class="fas fa-film"></i> Movies</button>
+    </nav>
     
     <div id="grid-page-view">
         <header class="flex items-center p-4 bg-black/90 backdrop-blur-sm sticky top-0 z-10 border-b border-gray-800">
-            <button id="grid-back-btn" class="text-xl mr-4 hover:text-[var(--primary-color)] transition-colors"><i class="fas fa-arrow-left"></i></button>
+            <button id="grid-back-btn" class="text-xl mr-4 hover:text-[var(--primary-color)]"><i class="fas fa-arrow-left"></i></button>
             <h2 id="grid-page-title" class="text-lg font-bold truncate"></h2>
         </header>
-        <main id="grid-page-content" class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-6"></main>
+        <main id="grid-page-content" class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></main>
     </div>
 
     <div id="search-overlay" class="flex-col p-4">
         <header class="flex items-center w-full mb-6">
-            <input id="search-input" type="text" placeholder="Search for Anything Here.." class="w-full bg-transparent text-xl md:text-2xl font-semibold text-white focus:outline-none border-b-2 border-gray-600 focus:border-[var(--primary-color)] transition-colors duration-300 pb-2">
-            <button id="search-close-btn" aria-label="Close Search" class="text-3xl ml-4 text-gray-400 hover:text-white transition-colors"><i class="fas fa-times"></i></button>
+            <input id="search-input" type="text" placeholder="Search for Movies, Sports..." class="w-full bg-transparent text-xl font-semibold text-white focus:outline-none border-b-2 border-gray-600 focus:border-[var(--primary-color)] transition-colors pb-2">
+            <button id="search-close-btn" aria-label="Close Search" class="text-3xl ml-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
         </header>
-        <main id="search-results-container" class="w-full flex-1 overflow-y-auto pr-2"></main>
+        <main id="search-results-container" class="w-full flex-1 overflow-y-auto pr-2 scrollbar-hide">
+            <!-- সার্চের ফলাফল এখানে দেখানো হবে -->
+            <div id="search-placeholder" class="text-center text-gray-500 mt-10">Type something to start searching.</div>
+        </main>
     </div>
-
-    <button id="scroll-top-btn" class="header-btn bg-[var(--primary-color)] text-white hover:bg-[var(--primary-color-hover)]">
-        <i class="fas fa-arrow-up"></i>
-    </button>
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         
         const firebaseConfig = { apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY", authDomain: "movie-92659.firebaseapp.com", projectId: "movie-92659", storageBucket: "movie-92659.appspot.com", messagingSenderId: "1090734362509", appId: "1:1090734362509:web:86be5583f6e8fcfdfa77c4" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        let searchableData = [];
         const UI = {
-            body: document.body, appShell: document.getElementById('app-shell'),
-            bannerWrapper: document.getElementById('banner-wrapper'),
-            bannerPlayLink: document.getElementById('banner-play-link'),
-            cricketPage: document.getElementById('cricket-page'),
-            moviesPage: document.getElementById('movies-page'),
-            liveTvPage: document.getElementById('livetv-page'),
-            searchOverlay: document.getElementById('search-overlay'),
-            searchInput: document.getElementById('search-input'),
-            searchResults: document.getElementById('search-results-container'),
+            pages: document.querySelectorAll('.page-content'),
+            bannerContainer: document.getElementById('banner-container'),
             gridPageView: document.getElementById('grid-page-view'),
             gridPageTitle: document.getElementById('grid-page-title'),
             gridPageContent: document.getElementById('grid-page-content'),
-            scrollTopBtn: document.getElementById('scroll-top-btn'),
+            searchOverlay: document.getElementById('search-overlay'),
+            searchInput: document.getElementById('search-input'),
+            searchResultsContainer: document.getElementById('search-results-container'),
+            searchPlaceholder: document.getElementById('search-placeholder'),
         };
 
         const Render = {
-            card: (item) => {
-                const isNew = item.createdAt && (Timestamp.now().seconds - item.createdAt.seconds < 2 * 24 * 60 * 60);
-                const badges = `${item.type === 'cricket' && item.isLive ? `<span class="badge badge-live">Live</span>` : ''}${item.type === 'movies' ? `<span class="badge badge-hd">HD</span>` : ''}${isNew && !item.isLive ? `<span class="badge badge-new">New</span>` : ''}`;
-                
-                return `
-                    <a href="player.html?id=${item.link}" class="block group">
-                        <div class="content-card">
-                            <div class="card-img-container relative aspect-[2/3] overflow-hidden">
-                                <img alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="${item.posterUrl}" loading="lazy" />
-                                <div class="play-icon-overlay absolute inset-0 bg-black/50 flex items-center justify-center">
-                                    <i class="fas fa-play text-4xl text-white opacity-90"></i>
-                                </div>
-                                ${badges}
-                            </div>
-                        </div>
-                        <p class="font-body text-sm font-semibold mt-3 truncate group-hover:text-[var(--primary-color)] transition-colors" title="${item.title}">${item.title}</p>
-                    </a>`;
-            },
-            liveTvChannel: (item) => {
-                return `
-                    <a href="player.html?id=${item.link}" title="${item.title}" class="live-tv-channel">
-                        <img src="${item.posterUrl}" alt="${item.title}" loading="lazy" />
-                    </a>
-                `;
+            card: (item, cardType = 'poster') => {
+                const aspectClass = cardType === 'thumbnail' ? 'aspect-video' : 'aspect-[2/3]';
+                const badge = item.isLive ? `<span class="badge badge-live"><span class="live-dot"></span>Live</span>` : '';
+                const sizeClass = cardType === 'thumbnail' ? 'w-60 flex-shrink-0' : 'w-36 sm:w-40 flex-shrink-0';
+                return `<div class="${sizeClass}"><a href="player.html?id=${item.link}" class="block group"><div class="content-card"><div class="card-img-container relative ${aspectClass}"><img alt="${item.title}" class="w-full h-full object-cover" src="${item.posterUrl}" loading="lazy" /><div class="play-icon-overlay"><i class="fas fa-play main-play-icon"></i></div>${badge}</div></div><p class="text-sm font-semibold mt-2 truncate group-hover:text-[var(--primary-color)] transition-colors">${item.title}</p></a></div>`;
             },
             section: (section, itemsHTML, type, sectionId) => {
-                return `
-                    <section>
-                        <div class="section-title-wrapper">
-                            <div class="section-title">
-                                <span class="accent-bar"></span>
-                                <h2>${section.title}</h2>
-                            </div>
-                            <button class="see-more-btn text-xs font-semibold text-gray-400 hover:text-[var(--primary-color)] transition-colors" data-title="${section.title}" data-type="${type}" data-section-id="${sectionId}">View All <i class="fas fa-angle-right ml-1"></i></button>
-                        </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-x-4 gap-y-6">${itemsHTML}</div>
-                    </section>`;
+                return `<section class="space-y-4"><div class="section-title-wrapper"><div class="section-title"><span class="accent-bar"></span><h2>${section.title}</h2></div><button class="see-more-btn text-xs font-semibold text-gray-400 hover:text-[var(--primary-color)]" data-title="${section.title}" data-type="${type}" data-section-id="${sectionId}">View All <i class="fas fa-angle-right ml-1"></i></button></div><div class="flex overflow-x-auto gap-4 pb-2 scrollbar-hide -mx-4 px-4">${itemsHTML}</div></section>`;
+            },
+            liveTvSection: (itemsHTML) => {
+                return `<section class="space-y-4"><div class="section-title-wrapper"><div class="section-title"><span class="accent-bar"></span><h2>Live TV Channels</h2></div></div><div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">${itemsHTML}</div></section>`;
+            },
+            // f1
+            searchResultItem: (item) => {
+                return `<a href="player.html?id=${item.link}" class="search-result-item"><img src="${item.posterUrl}" alt="${item.title}"><p class="font-semibold">${item.title}</p></a>`;
+            },
+            // f2
+            skeletonSection: (isThumbnail = false) => {
+                const cardType = isThumbnail ? 'thumbnail' : '';
+                let cards = '';
+                for (let i = 0; i < 6; i++) {
+                    cards += `<div class="w-36 sm:w-40 flex-shrink-0"><div class="skeleton-card shimmer"><div class="img ${cardType}"></div><div class="title"></div></div></div>`;
+                }
+                return `<section class="space-y-4"><div class="section-title-wrapper"><div class="h-6 w-48 bg-[#2a2a2a] rounded shimmer"></div></div><div class="flex overflow-x-auto gap-4 pb-2 scrollbar-hide -mx-4 px-4">${cards}</div></section>`;
             }
         };
         
         const App = {
+            contentCache: {},
+            allContent: [], // lal
+            
             setupEventListeners: () => {
-                document.getElementById('search-open-btn').addEventListener('click', () => { UI.body.classList.add('search-overlay-active', 'overflow-hidden'); UI.searchInput.focus(); });
-                document.getElementById('search-close-btn').addEventListener('click', () => { UI.body.classList.remove('search-overlay-active', 'overflow-hidden'); UI.searchInput.value = ''; App.performSearch(''); });
-                UI.searchInput.addEventListener('input', (e) => App.performSearch(e.target.value));
-                document.querySelectorAll('.tab-button').forEach(button => { button.addEventListener('click', () => { document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active')); document.getElementById(button.dataset.target).classList.add('active'); window.scrollTo(0,0); }); });
-                document.getElementById('grid-back-btn').addEventListener('click', () => { UI.gridPageView.style.display = 'none'; UI.appShell.style.display = 'block'; UI.body.classList.remove('overflow-hidden'); });
-                document.addEventListener('click', (e) => { if (e.target.closest('.see-more-btn')) { const { title, type, sectionId } = e.target.closest('.see-more-btn').dataset; App.showGridView(title, type, sectionId); } });
-                UI.scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-                window.addEventListener('scroll', () => UI.scrollTopBtn.classList.toggle('visible', window.scrollY > 400));
-            },
-            performSearch: (term) => {
-                const searchTerm = term.toLowerCase().trim();
-                if (!searchTerm) { UI.searchResults.innerHTML = `<p class="text-center text-gray-400 mt-10">Start typing to see results...</p>`; return; }
-                const results = searchableData.filter(item => item.title.toLowerCase().includes(searchTerm));
-                if (results.length) {
-                    const gridHTML = results.map(item => Render.card(item)).join('');
-                    UI.searchResults.innerHTML = `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-6">${gridHTML}</div>`;
-                } else { UI.searchResults.innerHTML = `<p class="text-center text-gray-400 mt-10">No results found for "${term}"</p>`; }
-            },
-            showGridView: async (title, type, sectionId) => {
-                UI.gridPageTitle.textContent = title;
-                UI.gridPageContent.innerHTML = Array(12).fill('<div class="aspect-[2/3] shimmer rounded-lg"></div>').join('');
-                UI.appShell.style.display = 'none'; UI.gridPageView.style.display = 'block'; UI.body.classList.add('overflow-hidden');
-                
-                try {
-                    const itemsQuery = query(collection(db, `${type}Sections/${sectionId}/items`), orderBy("createdAt", "desc"));
-                    const itemsSnapshot = await getDocs(itemsQuery);
-                    UI.gridPageContent.innerHTML = '';
-                    itemsSnapshot.forEach(itemDoc => {
-                        const itemData = { ...itemDoc.data(), type, link: `${type}Sections/${sectionId}/items/${itemDoc.id}` };
-                        UI.gridPageContent.innerHTML += Render.card(itemData);
-                    });
-                } catch (error) { UI.gridPageContent.innerHTML = `<p class="col-span-full text-red-500 text-center">Failed to load content.</p>`; }
-            },
-            fetchAndRenderBanners: async () => {
-                try {
-                    const bannerSnapshot = await getDocs(query(collection(db, "banners"), orderBy("order")));
-                    const bannerData = [];
-                    UI.bannerWrapper.innerHTML = '';
-
-                    bannerSnapshot.forEach(doc => {
-                        const banner = doc.data();
-                        bannerData.push(banner);
-                        const slide = `
-                        <div class="swiper-slide" data-link="${banner.link || '#'}">
-                            <a href="${banner.link || '#'}">
-                                <img src="${banner.posterUrl}" alt="${banner.title || 'Banner'}" loading="eager" />
-                            </a>
-                        </div>`;
-                        UI.bannerWrapper.innerHTML += slide;
-                    });
-                    
-                    if (bannerData.length > 0) {
-                        const swiper = new Swiper('.swiper', {
-                            loop: true,
-                            autoplay: { delay: 3000, disableOnInteraction: false },
-                            pagination: { el: '.swiper-pagination', clickable: true },
-                            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-                            on: {
-                                slideChange: function () {
-                                    const activeSlide = this.slides[this.activeIndex];
-                                    const link = activeSlide.dataset.link || '#';
-                                    UI.bannerPlayLink.href = link;
-                                },
-                                init: function() {
-                                    const activeSlide = this.slides[this.activeIndex];
-                                    const link = activeSlide.dataset.link || '#';
-                                    UI.bannerPlayLink.href = link;
-                                }
-                            }
-                        });
+                document.querySelectorAll('.nav-button').forEach(button => button.addEventListener('click', () => App.switchPage(button.dataset.target)));
+                document.getElementById('search-open-btn').addEventListener('click', () => {
+                    document.body.classList.add('search-overlay-active');
+                    UI.searchInput.focus();
+                });
+                document.getElementById('search-close-btn').addEventListener('click', () => document.body.classList.remove('search-overlay-active'));
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.see-more-btn')) {
+                        const btn = e.target.closest('.see-more-btn');
+                        App.showGridView(btn.dataset.title, btn.dataset.type, btn.dataset.sectionId);
                     }
+                });
+                document.getElementById('grid-back-btn').addEventListener('click', () => { UI.gridPageView.style.display = 'none'; });
+                
+                // do
+                UI.searchInput.addEventListener('input', App.handleSearch);
+            },
 
-                } catch (e) {
-                    console.error("Could not load banners:", e);
-                    UI.bannerWrapper.innerHTML = `<div class="swiper-slide flex items-center justify-center text-gray-400">Could not load banners</div>`;
+            // ha
+            handleSearch: (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (query.length < 2) {
+                    UI.searchResultsContainer.innerHTML = '';
+                    UI.searchPlaceholder.style.display = 'block';
+                    return;
+                }
+                
+                UI.searchPlaceholder.style.display = 'none';
+                const results = App.allContent.filter(item => item.title.toLowerCase().includes(query));
+                
+                if (results.length > 0) {
+                    UI.searchResultsContainer.innerHTML = results.map(Render.searchResultItem).join('');
+                } else {
+                    UI.searchResultsContainer.innerHTML = `<p class="text-center text-gray-500 mt-10">No results found for "${query}"</p>`;
                 }
             },
-            fetchAndRenderSection: async (type, container) => {
-                container.innerHTML = Array(2).fill('<div class="mb-10"><div class="h-8 w-1/2 shimmer rounded mb-4"></div><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">' + Array(4).fill('<div class="aspect-[2/3] shimmer rounded-lg"></div>').join('') + '</div></div>').join('');
-                try {
+
+            switchPage: (pageId) => {
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.toggle('active', btn.dataset.target === pageId));
+                UI.pages.forEach(page => page.classList.toggle('active', page.id === pageId));
+                window.scrollTo(0, 0);
+            },
+            
+            showGridView: async (title, type, sectionId) => {
+                UI.gridPageTitle.textContent = title;
+                const cardType = type === 'cricket' ? 'thumbnail' : '';
+                UI.gridPageContent.innerHTML = Array(12).fill(`<div class="skeleton-card shimmer w-full"><div class="img ${cardType}"></div><div class="title"></div></div>`).join('');
+                UI.gridPageView.style.display = 'block';
+                
+                const itemsQuery = query(collection(db, `${type}Sections/${sectionId}/items`), orderBy("createdAt", "desc"));
+                const itemsSnapshot = await getDocs(itemsQuery);
+                let gridHTML = '';
+                itemsSnapshot.forEach(itemDoc => {
+                    const itemData = { ...itemDoc.data(), link: `${type}Sections/${sectionId}/items/${itemDoc.id}` };
+                    gridHTML += Render.card(itemData, type === 'cricket' ? 'thumbnail' : 'poster').replace('flex-shrink-0', 'w-full');
+                });
+                UI.gridPageContent.innerHTML = gridHTML;
+            },
+
+            // loo
+            renderSkeletons: () => {
+                const homeContainer = document.getElementById('home-sections-container');
+                homeContainer.innerHTML = Render.skeletonSection() + Render.skeletonSection(true) + Render.skeletonSection();
+            },
+
+            fetchAllContent: async () => {
+                if (App.contentCache.loaded) return;
+
+                const bannerSnapshot = await getDocs(query(collection(db, "banners"), orderBy("order")));
+                if (!bannerSnapshot.empty) {
+                    UI.bannerContainer.innerHTML = `<div class="swiper h-full"><div id="banner-wrapper" class="swiper-wrapper"></div><div class="swiper-pagination"></div></div>`;
+                    const bannerWrapper = document.getElementById('banner-wrapper');
+                    bannerSnapshot.forEach(doc => { 
+                        const b = doc.data();
+                        // bon
+                        bannerWrapper.innerHTML += `<div class="swiper-slide"><a href="${b.link||'#'}"><img src="${b.posterUrl}" alt="${b.title||''}" loading="eager"/><div class="banner-play-icon"><i class="fas fa-play"></i></div></a></div>`; 
+                    });
+                    new Swiper('#banner-container .swiper', { loop: true, autoplay: { delay: 3500 }, pagination: { el: '.swiper-pagination', clickable: true }});
+                } else { UI.bannerContainer.style.display = 'none'; }
+                
+                let homeHTML = '', liveTvHTML = '', cricketHTML = '', moviesHTML = '';
+
+                const tvSnapshot = await getDocs(query(collection(db, "liveTV"), orderBy("order")));
+                const tvItems = tvSnapshot.docs.map(doc => {
+                    const itemData = {id: doc.id, ...doc.data()};
+                    App.allContent.push({ title: itemData.name, posterUrl: itemData.logoUrl, link: `liveTV/${itemData.id}` });
+                    return `<a href="player.html?id=liveTV/${doc.id}" class="live-tv-channel"><img src="${itemData.logoUrl}" alt="${itemData.name}"/></a>`;
+                }).join('');
+                liveTvHTML = Render.liveTvSection(tvItems);
+
+                for (const type of ['cricket', 'movies']) {
                     const sectionsSnapshot = await getDocs(query(collection(db, `${type}Sections`), orderBy("order")));
-                    container.innerHTML = '';
                     for (const sectionDoc of sectionsSnapshot.docs) {
-                        const section = sectionDoc.data();
+                        const sectionData = sectionDoc.data();
                         const itemsSnapshot = await getDocs(query(collection(db, `${type}Sections/${sectionDoc.id}/items`), orderBy("createdAt", "desc")));
                         if (itemsSnapshot.empty) continue;
                         
-                        const itemsHTML = itemsSnapshot.docs.slice(0, 4).map(itemDoc => {
-                            const cardData = { ...itemDoc.data(), type, link: `${type}Sections/${sectionDoc.id}/items/${itemDoc.id}` };
-                            return Render.card(cardData);
+                        const itemsHTML = itemsSnapshot.docs.slice(0, 10).map(itemDoc => {
+                            const itemData = { ...itemDoc.data(), link: `${type}Sections/${sectionDoc.id}/items/${itemDoc.id}` };
+                            // kire
+                            if(!App.allContent.some(item => item.link === itemData.link)) {
+                                App.allContent.push(itemData);
+                            }
+                            return Render.card(itemData, type === 'cricket' ? 'thumbnail' : 'poster');
                         }).join('');
                         
-                        container.innerHTML += Render.section(section, itemsHTML, type, sectionDoc.id);
+                        const sectionHTML = Render.section(sectionData, itemsHTML, type, sectionDoc.id);
+                        if(type === 'cricket') cricketHTML += sectionHTML;
+                        else moviesHTML += sectionHTML;
                     }
-                } catch (e) { container.innerHTML = `<p class="text-red-500 p-4">Could not load ${type} content.</p>`; }
+                }
+                
+                document.getElementById('home-sections-container').innerHTML = liveTvHTML + cricketHTML + moviesHTML;
+                document.getElementById('livetv-page').innerHTML = liveTvHTML;
+                document.getElementById('cricket-page').innerHTML = cricketHTML;
+                document.getElementById('movies-page').innerHTML = moviesHTML;
+                
+                App.contentCache.loaded = true;
             },
-            fetchAndRenderLiveTV: async () => {
-                UI.liveTvPage.innerHTML = `<div class="p-4 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-4 sm:gap-6">${Array(20).fill('<div class="aspect-square shimmer rounded-full"></div>').join('')}</div>`;
-                try {
-                    const tvSnapshot = await getDocs(query(collection(db, "liveTV"), orderBy("order")));
-                    let tvHtml = '';
-                    tvSnapshot.forEach(doc => {
-                        const cardData = { ...doc.data(), title: doc.data().name, posterUrl: doc.data().logoUrl, type: 'tv', link: `liveTV/${doc.id}` };
-                        tvHtml += Render.liveTvChannel(cardData);
-                    });
-                    UI.liveTvPage.innerHTML = `<div class="p-4 grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-4 sm:gap-6">${tvHtml}</div>`;
-                } catch (e) { UI.liveTvPage.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load Live TV channels.</p>`; }
-            },
-            fetchAllContentForSearch: async () => {
-                searchableData = [];
-                const contentTypes = ['cricket', 'movies'];
-                try {
-                    for (const type of contentTypes) {
-                        const sectionsSnapshot = await getDocs(collection(db, `${type}Sections`));
-                        for (const sectionDoc of sectionsSnapshot.docs) {
-                            const itemsSnapshot = await getDocs(collection(db, `${type}Sections/${sectionDoc.id}/items`));
-                            itemsSnapshot.forEach(itemDoc => {
-                                searchableData.push({ ...itemDoc.data(), type: type, link: `${type}Sections/${sectionDoc.id}/items/${itemDoc.id}` });
-                            });
-                        }
-                    }
-                    const tvSnapshot = await getDocs(collection(db, "liveTV"));
-                    tvSnapshot.forEach(doc => {
-                        searchableData.push({ title: doc.data().name, posterUrl: doc.data().logoUrl, type: 'tv', link: `liveTV/${doc.id}`, isLive: true });
-                    });
-                } catch (error) { console.error("Search content fetch failed:", error); }
-            },
-            init: async () => {
+            init: () => {
                 App.setupEventListeners();
-                App.fetchAndRenderBanners();
-                App.fetchAndRenderSection('cricket', UI.cricketPage);
-                App.fetchAndRenderSection('movies', UI.moviesPage);
-                App.fetchAndRenderLiveTV();
-                await App.fetchAllContentForSearch();
+                App.renderSkeletons(); // আমারে বলো
+                App.fetchAllContent(); // বাবা
             }
         };
         
