@@ -149,8 +149,8 @@
                 </div>
             </div>
             <div id="livetv-page" class="page-content"></div>
-            <div id="cricket-page" class="page-content"></div>
-            <div id="movies-page" class="page-content"></div>
+            <div id="cricket-page" class="page-content space-y-8"></div>
+            <div id="movies-page" class="page-content space-y-8"></div>
         </main>
         
         <footer class="bg-[#0B0B0B] text-gray-400 pt-10 pb-7 text-sm mt-auto"></footer>
@@ -204,23 +204,56 @@
         };
 
         const Render = {
-            card: (item, cardType = 'poster') => {
+            // কার্ড রেন্ডারিং ফাংশন আপডেট করা হয়েছে
+            // isGridItem প্যারামিটার যোগ করা হয়েছে গ্রিড এবং স্ক্রলারের মধ্যে পার্থক্য করার জন্য
+            card: (item, cardType = 'poster', isGridItem = false) => {
                 const aspectClass = cardType === 'thumbnail' ? 'aspect-video' : 'aspect-[2/3]';
                 const badge = item.isLive ? `<span class="badge badge-live"><span class="live-dot"></span>Live</span>` : '';
-                const sizeClass = cardType === 'thumbnail' ? 'w-60 flex-shrink-0' : 'w-36 sm:w-40 flex-shrink-0';
-                return `<div class="${sizeClass}"><a href="player.html?id=${item.link}" class="block group"><div class="content-card"><div class="card-img-container relative ${aspectClass}"><img alt="${item.title}" class="w-full h-full object-cover" src="${item.posterUrl}" loading="lazy" /><div class="play-icon-overlay"><i class="fas fa-play main-play-icon"></i></div>${badge}</div></div><p class="text-sm font-semibold mt-2 truncate group-hover:text-[var(--primary-color)] transition-colors">${item.title}</p></a></div>`;
+                const sizeClass = isGridItem ? 'w-full' : (cardType === 'thumbnail' ? 'w-60 flex-shrink-0' : 'w-36 sm:w-40 flex-shrink-0');
+                
+                return `<div class="${sizeClass}">
+                            <a href="player.html?id=${item.link}" class="block group">
+                                <div class="content-card">
+                                    <div class="card-img-container relative ${aspectClass}">
+                                        <img alt="${item.title || item.name}" class="w-full h-full object-cover" src="${item.posterUrl}" loading="lazy" />
+                                        <div class="play-icon-overlay"><i class="fas fa-play main-play-icon"></i></div>
+                                        ${badge}
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold mt-2 truncate group-hover:text-[var(--primary-color)] transition-colors">${item.title || item.name}</p>
+                            </a>
+                        </div>`;
+            },
+            // হোমপেজের জন্য নতুন লাইভ টিভি চ্যানেল কার্ড
+            liveTvChannelCard: (item) => {
+                return `<div class="flex-shrink-0 w-24 text-center">
+                            <a href="player.html?id=liveTV/${item.id}" class="live-tv-channel">
+                                <img src="${item.logoUrl}" alt="${item.name}"/>
+                            </a>
+                            <p class="text-xs mt-1 truncate font-medium text-gray-300">${item.name}</p>
+                        </div>`;
             },
             section: (section, itemsHTML, type, sectionId) => {
-                return `<section class="space-y-4"><div class="section-title-wrapper"><div class="section-title"><span class="accent-bar"></span><h2>${section.title}</h2></div><button class="see-more-btn text-xs font-semibold text-gray-400 hover:text-[var(--primary-color)]" data-title="${section.title}" data-type="${type}" data-section-id="${sectionId}">View All <i class="fas fa-angle-right ml-1"></i></button></div><div class="flex overflow-x-auto gap-4 pb-2 scrollbar-hide -mx-4 px-4">${itemsHTML}</div></section>`;
+                return `<section class="space-y-4">
+                            <div class="section-title-wrapper">
+                                <div class="section-title"><span class="accent-bar"></span><h2>${section.title}</h2></div>
+                                <button class="see-more-btn text-xs font-semibold text-gray-400 hover:text-[var(--primary-color)]" data-title="${section.title}" data-type="${type}" data-section-id="${sectionId}">View All <i class="fas fa-angle-right ml-1"></i></button>
+                            </div>
+                            <div class="flex overflow-x-auto gap-4 pb-2 scrollbar-hide -mx-4 px-4">${itemsHTML}</div>
+                        </section>`;
             },
+            // এই ফাংশনটি এখন শুধু Live TV পেজের জন্য ব্যবহৃত হবে
             liveTvSection: (itemsHTML) => {
-                return `<section class="space-y-4"><div class="section-title-wrapper"><div class="section-title"><span class="accent-bar"></span><h2>Live TV Channels</h2></div></div><div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">${itemsHTML}</div></section>`;
+                return `<section class="space-y-4">
+                            <div class="section-title-wrapper">
+                                <div class="section-title"><span class="accent-bar"></span><h2>Live TV Channels</h2></div>
+                            </div>
+                            <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">${itemsHTML}</div>
+                        </section>`;
             },
-            // f1
             searchResultItem: (item) => {
                 return `<a href="player.html?id=${item.link}" class="search-result-item"><img src="${item.posterUrl}" alt="${item.title}"><p class="font-semibold">${item.title}</p></a>`;
             },
-            // f2
             skeletonSection: (isThumbnail = false) => {
                 const cardType = isThumbnail ? 'thumbnail' : '';
                 let cards = '';
@@ -233,28 +266,37 @@
         
         const App = {
             contentCache: {},
-            allContent: [], // lal
+            allContent: [],
             
+            // ইভেন্ট লিসেনার আপডেট করা হয়েছে
             setupEventListeners: () => {
                 document.querySelectorAll('.nav-button').forEach(button => button.addEventListener('click', () => App.switchPage(button.dataset.target)));
+                
                 document.getElementById('search-open-btn').addEventListener('click', () => {
                     document.body.classList.add('search-overlay-active');
                     UI.searchInput.focus();
                 });
+                
                 document.getElementById('search-close-btn').addEventListener('click', () => document.body.classList.remove('search-overlay-active'));
+                
+                // View All বাটন ক্লিকের জন্য উন্নত লজিক
                 document.addEventListener('click', (e) => {
-                    if (e.target.closest('.see-more-btn')) {
-                        const btn = e.target.closest('.see-more-btn');
-                        App.showGridView(btn.dataset.title, btn.dataset.type, btn.dataset.sectionId);
+                    const seeMoreBtn = e.target.closest('.see-more-btn');
+                    if (seeMoreBtn) {
+                        // যদি বাটনটি লাইভ টিভির জন্য হয়, তবে পেজ সুইচ করবে
+                        if (seeMoreBtn.dataset.type === 'livetv-redirect') {
+                            App.switchPage('livetv-page');
+                        } else { // অন্যথায় গ্রিড ভিউ দেখাবে
+                            App.showGridView(seeMoreBtn.dataset.title, seeMoreBtn.dataset.type, seeMoreBtn.dataset.sectionId);
+                        }
                     }
                 });
+
                 document.getElementById('grid-back-btn').addEventListener('click', () => { UI.gridPageView.style.display = 'none'; });
                 
-                // do
                 UI.searchInput.addEventListener('input', App.handleSearch);
             },
 
-            // ha
             handleSearch: (e) => {
                 const query = e.target.value.toLowerCase().trim();
                 if (query.length < 2) {
@@ -279,10 +321,12 @@
                 window.scrollTo(0, 0);
             },
             
+            // গ্রিড ভিউ ফাংশন আপডেট করা হয়েছে
             showGridView: async (title, type, sectionId) => {
                 UI.gridPageTitle.textContent = title;
-                const cardType = type === 'cricket' ? 'thumbnail' : '';
-                UI.gridPageContent.innerHTML = Array(12).fill(`<div class="skeleton-card shimmer w-full"><div class="img ${cardType}"></div><div class="title"></div></div>`).join('');
+                const cardType = type === 'cricket' ? 'thumbnail' : 'poster';
+                const skeletonCardType = type === 'cricket' ? 'thumbnail' : '';
+                UI.gridPageContent.innerHTML = Array(12).fill(`<div class="skeleton-card shimmer w-full"><div class="img ${skeletonCardType}"></div><div class="title"></div></div>`).join('');
                 UI.gridPageView.style.display = 'block';
                 
                 const itemsQuery = query(collection(db, `${type}Sections/${sectionId}/items`), orderBy("createdAt", "desc"));
@@ -290,42 +334,65 @@
                 let gridHTML = '';
                 itemsSnapshot.forEach(itemDoc => {
                     const itemData = { ...itemDoc.data(), link: `${type}Sections/${sectionId}/items/${itemDoc.id}` };
-                    gridHTML += Render.card(itemData, type === 'cricket' ? 'thumbnail' : 'poster').replace('flex-shrink-0', 'w-full');
+                    // isGridItem: true পাস করা হচ্ছে যাতে কার্ডগুলো সঠিক স্টাইল পায়
+                    gridHTML += Render.card(itemData, cardType, true);
                 });
                 UI.gridPageContent.innerHTML = gridHTML;
             },
 
-            // loo
             renderSkeletons: () => {
                 const homeContainer = document.getElementById('home-sections-container');
                 homeContainer.innerHTML = Render.skeletonSection() + Render.skeletonSection(true) + Render.skeletonSection();
             },
 
+            // ডেটা লোড করার প্রধান ফাংশনটি নতুন করে সাজানো হয়েছে
             fetchAllContent: async () => {
                 if (App.contentCache.loaded) return;
 
+                // ব্যানার লোডিং
                 const bannerSnapshot = await getDocs(query(collection(db, "banners"), orderBy("order")));
                 if (!bannerSnapshot.empty) {
                     UI.bannerContainer.innerHTML = `<div class="swiper h-full"><div id="banner-wrapper" class="swiper-wrapper"></div><div class="swiper-pagination"></div></div>`;
                     const bannerWrapper = document.getElementById('banner-wrapper');
                     bannerSnapshot.forEach(doc => { 
                         const b = doc.data();
-                        // bon
                         bannerWrapper.innerHTML += `<div class="swiper-slide"><a href="${b.link||'#'}"><img src="${b.posterUrl}" alt="${b.title||''}" loading="eager"/><div class="banner-play-icon"><i class="fas fa-play"></i></div></a></div>`; 
                     });
                     new Swiper('#banner-container .swiper', { loop: true, autoplay: { delay: 3500 }, pagination: { el: '.swiper-pagination', clickable: true }});
                 } else { UI.bannerContainer.style.display = 'none'; }
                 
-                let homeHTML = '', liveTvHTML = '', cricketHTML = '', moviesHTML = '';
+                let homePageHTML = '', liveTvPageGridHTML = '', cricketHTML = '', moviesHTML = '';
 
+                // --- Live TV ডেটা লোড এবং রেন্ডারিং ---
                 const tvSnapshot = await getDocs(query(collection(db, "liveTV"), orderBy("order")));
-                const tvItems = tvSnapshot.docs.map(doc => {
+                
+                // Live TV পেজের জন্য গ্রিড আইটেম তৈরি
+                const tvGridItems = tvSnapshot.docs.map(doc => {
                     const itemData = {id: doc.id, ...doc.data()};
-                    App.allContent.push({ title: itemData.name, posterUrl: itemData.logoUrl, link: `liveTV/${itemData.id}` });
+                    if (!App.allContent.some(item => item.link === `liveTV/${itemData.id}`)) {
+                        App.allContent.push({ title: itemData.name, posterUrl: itemData.logoUrl, link: `liveTV/${itemData.id}` });
+                    }
                     return `<a href="player.html?id=liveTV/${doc.id}" class="live-tv-channel"><img src="${itemData.logoUrl}" alt="${itemData.name}"/></a>`;
                 }).join('');
-                liveTvHTML = Render.liveTvSection(tvItems);
+                liveTvPageGridHTML = Render.liveTvSection(tvGridItems);
 
+                // হোমপেজের জন্য আনুভূমিক স্ক্রল আইটেম তৈরি
+                const tvHorizontalItems = tvSnapshot.docs.map(doc => Render.liveTvChannelCard({id: doc.id, ...doc.data()})).join('');
+                
+                // হোমপেজের জন্য কাস্টম লাইভ টিভি সেকশন (স্ক্রলসহ)
+                const homeLiveTvSection = `
+                    <section class="space-y-4">
+                        <div class="section-title-wrapper">
+                            <div class="section-title"><span class="accent-bar"></span><h2>Live TV Channels</h2></div>
+                            <button class="see-more-btn text-xs font-semibold text-gray-400 hover:text-[var(--primary-color)]" data-type="livetv-redirect">
+                                View All <i class="fas fa-angle-right ml-1"></i>
+                            </button>
+                        </div>
+                        <div class="flex overflow-x-auto gap-4 pb-2 scrollbar-hide -mx-4 px-4">${tvHorizontalItems}</div>
+                    </section>
+                `;
+
+                // --- ক্রিকেট ও মুভি সেকশন ---
                 for (const type of ['cricket', 'movies']) {
                     const sectionsSnapshot = await getDocs(query(collection(db, `${type}Sections`), orderBy("order")));
                     for (const sectionDoc of sectionsSnapshot.docs) {
@@ -335,7 +402,6 @@
                         
                         const itemsHTML = itemsSnapshot.docs.slice(0, 10).map(itemDoc => {
                             const itemData = { ...itemDoc.data(), link: `${type}Sections/${sectionDoc.id}/items/${itemDoc.id}` };
-                            // kire
                             if(!App.allContent.some(item => item.link === itemData.link)) {
                                 App.allContent.push(itemData);
                             }
@@ -348,8 +414,11 @@
                     }
                 }
                 
-                document.getElementById('home-sections-container').innerHTML = liveTvHTML + cricketHTML + moviesHTML;
-                document.getElementById('livetv-page').innerHTML = liveTvHTML;
+                // সব পেজের কন্টেন্ট চূড়ান্ত করা
+                homePageHTML = homeLiveTvSection + cricketHTML + moviesHTML;
+                
+                document.getElementById('home-sections-container').innerHTML = homePageHTML;
+                document.getElementById('livetv-page').innerHTML = liveTvPageGridHTML;
                 document.getElementById('cricket-page').innerHTML = cricketHTML;
                 document.getElementById('movies-page').innerHTML = moviesHTML;
                 
@@ -357,8 +426,8 @@
             },
             init: () => {
                 App.setupEventListeners();
-                App.renderSkeletons(); // আমারে বলো
-                App.fetchAllContent(); // বাবা
+                App.renderSkeletons();
+                App.fetchAllContent();
             }
         };
         
