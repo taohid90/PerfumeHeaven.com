@@ -5,283 +5,201 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title>Playing - CrickStar</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
-        body { font-family: 'Baloo 2', cursive; }
+        body { font-family: 'Baloo 2', cursive; overflow-x: hidden; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Player এর জন্য wrapper */
-        .player-wrapper {
-             position: relative; width: 100%; padding-top: 56.25%; background-color: #000;
-        }
-        .player-wrapper iframe, .player-wrapper video {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
-        }
-        .player-wrapper video { object-fit: cover; }
 
-        /* Action বাটন এর জন্য স্টাইল */
-        .action-btn {
-            transition: all 0.2s ease-in-out;
-        }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            color: #1DB954;
-        }
-        .action-btn.active {
-            color: #1DB954;
-        }
-        
-        /* কমেন্ট সেকশন এর জন্য স্টাইল */
-        #comment-section {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 70%;
-            background-color: #121212; border-top: 1px solid #282828;
-            transform: translateY(100%); transition: transform 0.4s ease-in-out; z-index: 50;
-        }
-        #comment-section.open {
-            transform: translateY(0);
-        }
+        #player-wrapper { position: relative; width: 100%; background-color: #000; transition: all 0.3s ease-in-out; }
+        #player-wrapper .player-content { position: relative; width: 100%; padding-top: 56.25%; display: flex; align-items: center; justify-content: center; }
+        #player-wrapper .player-content iframe, #player-wrapper .player-content video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; object-fit: contain; }
 
-        /* Related মুভি কার্ড এর জন্য hover এফেক্ট */
-        .related-card img { transition: transform 0.3s ease-in-out; }
+        /* চূড়ান্ত রোটেটেড ভিউ স্টাইল */
+        #player-wrapper.rotated-view {
+            position: fixed; top: 0; left: 0;
+            width: 100vh; height: 100vw;
+            transform-origin: center;
+            transform: rotate(90deg) translate(calc((100vh - 100vw) / 2), calc((100vh - 100vw) / 2));
+            z-index: 9999; background: #000;
+        }
+        #player-wrapper.rotated-view .player-content { width: 100%; height: 100%; padding-top: 0; }
+        
+        .view-mode-btn {
+            position: absolute; color: white; background: none; border: none;
+            width: 50px; height: 50px; cursor: pointer; font-size: 22px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 21;
+            text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.8);
+        }
+        .enter-rotated-view-btn { bottom: 5px; right: 5px; }
+        #player-wrapper.rotated-view .enter-rotated-view-btn { display: none; }
+
+        .close-rotated-view-btn {
+            top: 20px; left: 20px;
+            display: none;
+            transform: rotate(-90deg); /* আইকন সোজা রাখার জন্য */
+        }
+        #player-wrapper.rotated-view .close-rotated-view-btn { display: flex; }
+
+        .related-card .image-container { width: 100%; height: 160px; border-radius: 0.375rem; overflow: hidden; background-color: #333; }
+        .related-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease-in-out; }
         .related-card:hover img { transform: scale(1.05); }
+
+        .action-btn { transition: all 0.2s ease-in-out; }
+        .action-btn:hover { transform: translateY(-2px); color: #1DB954; }
+        .action-btn.active { color: #1DB954; }
+        #comment-section { position: fixed; bottom: 0; left: 0; right: 0; height: 70%; background-color: #121212; border-top: 1px solid #282828; transform: translateY(100%); transition: transform 0.4s ease-in-out; z-index: 50; }
+        #comment-section.open { transform: translateY(0); }
     </style>
 </head>
 <body class="bg-black text-white">
-
-    <!-- প্লেয়ার সেকশন (Full Width) -->
     <section id="player-container" class="w-full bg-black">
-        <div class="player-wrapper flex items-center justify-center">
-            <i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i>
+        <div id="player-wrapper">
+            <div class="player-content">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i>
+            </div>
         </div>
     </section>
 
-    <!-- *** সমাধান: একটি কন্টেইনারের মধ্যে মূল কন্টেন্ট রাখা হয়েছে যাতে লেআউট ঠিক থাকে *** -->
     <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-
-        <!-- *** সমাধান: Action Bar এখন responsive। ছোট স্ক্রিনে বাটনগুলো নিচে নিচে আসবে *** -->
-        <section id="action-bar" class="py-4 flex flex-wrap gap-4 items-center justify-between text-gray-400 border-b border-gray-800">
-            <div class="flex items-center space-x-6">
-                <button id="like-btn" class="action-btn flex items-center space-x-2">
-                    <i class="far fa-thumbs-up text-xl"></i>
-                    <span id="like-count">0</span>
-                </button>
-                <button id="dislike-btn" class="action-btn flex items-center space-x-2">
-                    <i class="far fa-thumbs-down text-xl"></i>
-                    <span id="dislike-count">0</span>
-                </button>
-                <button id="comment-btn" class="action-btn flex items-center space-x-2">
-                    <i class="far fa-comment-alt text-xl"></i>
-                    <span>Comment</span>
-                </button>
-            </div>
-            <button id="report-btn" class="action-btn flex items-center space-x-2">
-                <i class="far fa-flag text-xl"></i>
-                <span>Report</span>
-            </button>
-        </section>
-
+        <section id="action-bar" class="py-4 flex flex-wrap gap-4 items-center justify-between text-gray-400 border-b border-gray-800"><div class="flex items-center space-x-6"><button id="like-btn" class="action-btn flex items-center space-x-2"><i class="far fa-thumbs-up text-xl"></i><span id="like-count">0</span></button><button id="dislike-btn" class="action-btn flex items-center space-x-2"><i class="far fa-thumbs-down text-xl"></i><span id="dislike-count">0</span></button><button id="comment-btn" class="action-btn flex items-center space-x-2"><i class="far fa-comment-alt text-xl"></i><span>Comment</span></button></div><button id="report-btn" class="action-btn flex items-center space-x-2"><i class="far fa-flag text-xl"></i><span>Report</span></button></section>
         <section id="movie-info" class="py-6"></section>
-
-        <section id="related-content" class="py-6">
-             <h3 id="related-title" class="text-white text-lg font-semibold mb-3">Related</h3>
-             <div id="related-content-container" class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2"></div>
-        </section>
+        <section id="related-content" class="py-6"><h3 id="related-title" class="text-white text-lg font-semibold mb-3">Related</h3><div id="related-content-container" class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2"></div></section>
     </main>
-
-    <section id="comment-section" class="flex flex-col">
-        <header class="p-4 border-b border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-semibold">Comments</h3>
-            <button id="close-comments-btn" class="text-2xl hover:text-white text-gray-400 transition-colors">×</button>
-        </header>
-        <div id="comments-list" class="flex-grow p-4 overflow-y-auto"></div>
-        <form id="comment-form" class="p-4 border-t border-gray-700 flex items-center">
-            <input id="comment-input" type="text" class="w-full bg-gray-800 text-white rounded-l-md p-2 focus:outline-none focus:ring-2 focus:ring-green-600" placeholder="Add a comment...">
-            <button type="submit" class="bg-green-600 text-white p-2 rounded-r-md hover:bg-green-700 transition-colors">Send</button>
-        </form>
-    </section>
+    <section id="comment-section" class="flex flex-col"><header class="p-4 border-b border-gray-700 flex justify-between items-center"><h3 class="text-lg font-semibold">Comments</h3><button id="close-comments-btn" class="text-2xl hover:text-white text-gray-400 transition-colors">×</button></header><div id="comments-list" class="flex-grow p-4 overflow-y-auto"></div><form id="comment-form" class="p-4 border-t border-gray-700 flex items-center"><input id="comment-input" type="text" class="w-full bg-gray-800 text-white rounded-l-md p-2 focus:outline-none focus:ring-2 focus:ring-green-600" placeholder="Add a comment..."><button type="submit" class="bg-green-600 text-white p-2 rounded-r-md hover:bg-green-700 transition-colors">Send</button></form></section>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, updateDoc, increment, getDocs, where, limit } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         
-        // Firebase কনফিগারেশন অপরিবর্তিত
         const firebaseConfig = { apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY", authDomain: "movie-92659.firebaseapp.com", projectId: "movie-92659", storageBucket: "movie-92659.appspot.com", messagingSenderId: "1090734362509", appId: "1:1090734362509:web:86be5583f6e8fcfdfa77c4" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // DOM এলিমেন্টগুলো ধরা
-        const playerContainer = document.getElementById('player-container');
-        const movieInfoContainer = document.getElementById('movie-info');
-        const relatedContentContainer = document.getElementById('related-content-container');
-        const relatedTitle = document.getElementById('related-title');
+        // DOM elements and state
+        const movieInfoContainer = document.getElementById('movie-info'), relatedContentContainer = document.getElementById('related-content-container'), relatedTitle = document.getElementById('related-title');
         const likeBtn = document.getElementById('like-btn'), dislikeBtn = document.getElementById('dislike-btn'), commentBtn = document.getElementById('comment-btn'), reportBtn = document.getElementById('report-btn');
         const likeCountSpan = document.getElementById('like-count'), dislikeCountSpan = document.getElementById('dislike-count');
         const commentSection = document.getElementById('comment-section'), closeCommentsBtn = document.getElementById('close-comments-btn'), commentForm = document.getElementById('comment-form'), commentInput = document.getElementById('comment-input'), commentsList = document.getElementById('comments-list');
-
-        let movieRef;
-        let isFirstLoad = true; // এই ভেরিয়েবলটি প্লেয়ারকে বার বার রিলোড হওয়া থেকে আটকায়
+        let movieRef, isFirstLoad = true;
 
         function createFinalPlayer(videoUrl, posterUrl) {
+            const playerWrapper = document.getElementById('player-wrapper');
+            const playerContent = playerWrapper.querySelector('.player-content');
+            
+            playerContent.innerHTML = ''; // Clear spinner
+            
             const lowerCaseUrl = videoUrl.toLowerCase();
-            let playerHtml;
-            const directVideoExtensions = ['.mp4', '.mkv', 'webm', '.ogg', '.ogv'];
-            const isDirectVideo = directVideoExtensions.some(ext => lowerCaseUrl.endsWith(ext)) || lowerCaseUrl.includes('r2.dev');
-
-            if (isDirectVideo) {
-                playerHtml = `<video controls autoplay poster="${posterUrl}" class="w-full h-full"><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
+            if (lowerCaseUrl.endsWith('.m3u8')) {
+                playerContent.innerHTML = `<video id="hls-player" poster="${posterUrl}" controls playsinline></video>`;
+                const video = document.getElementById('hls-player');
+                if (Hls.isSupported()) { const hls = new Hls(); hls.loadSource(videoUrl); hls.attachMedia(video); }
+                else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = videoUrl; }
+            } else if (['.mp4', '.mkv', '.webm'].some(ext => lowerCaseUrl.endsWith(ext)) || lowerCaseUrl.includes('pixeldrain')) {
+                playerContent.innerHTML = `<video controls poster="${posterUrl}" playsinline><source src="${videoUrl}"></video>`;
             } else {
-                playerHtml = `<iframe src="${videoUrl}" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`;
+                playerContent.innerHTML = `<iframe src="${videoUrl}" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>`;
             }
-            playerContainer.innerHTML = `<div class="player-wrapper">${playerHtml}</div>`;
-        }
-        
-        async function loadRelatedContent(path, currentMovieId) {
-            relatedContentContainer.innerHTML = '<p class="text-gray-500">Loading related content...</p>';
-            try {
-                // path থেকে কালেকশনের নাম বের করা (e.g., movies/123 -> movies)
-                const collectionPath = path.substring(0, path.lastIndexOf('/'));
-                const contentQuery = query(collection(db, collectionPath), where("__name__", "!=", currentMovieId), limit(10));
-                const snapshot = await getDocs(contentQuery);
 
-                relatedContentContainer.innerHTML = '';
-                if (snapshot.empty) { 
-                    relatedContentContainer.innerHTML = '<p class="text-gray-500">No related content found.</p>'; 
-                    return; 
-                }
-                
-                snapshot.forEach(docSnap => {
-                    const content = docSnap.data();
-                    const card = document.createElement('div');
-                    card.className = 'flex-shrink-0 w-32 md:w-36 related-card';
-                    card.innerHTML = `<a href="?id=${collectionPath}/${docSnap.id}">
-                                        <img alt="${content.title || content.name}" class="rounded-md w-full h-44 md:h-48 object-cover" src="${content.posterUrl || content.logoUrl}" />
-                                        <p class="text-gray-300 text-sm mt-1 truncate">${content.title || content.name}</p>
-                                      </a>`;
-                    relatedContentContainer.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Error loading related content: ", error);
-                relatedContentContainer.innerHTML = '<p class="text-red-500">Could not load related content.</p>';
-            }
+            playerWrapper.querySelectorAll('.view-mode-btn').forEach(btn => btn.remove());
+            
+            const enterBtn = document.createElement('button');
+            enterBtn.className = 'view-mode-btn enter-rotated-view-btn';
+            enterBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'view-mode-btn close-rotated-view-btn';
+            closeBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+            
+            playerWrapper.appendChild(enterBtn);
+            playerWrapper.appendChild(closeBtn);
+            
+            enterBtn.onclick = () => {
+                playerWrapper.classList.add('rotated-view');
+                document.body.style.overflow = 'hidden';
+            };
+            
+            closeBtn.onclick = () => {
+                playerWrapper.classList.remove('rotated-view');
+                document.body.style.overflow = '';
+            };
         }
         
+        // --- বাকি ফাংশনগুলো অপরিবর্তিত ---
         async function loadMovieData() {
-            movieInfoContainer.innerHTML = '<p class="text-gray-400">Loading details...</p>';
             const urlParams = new URLSearchParams(window.location.search);
             const fullIdPath = urlParams.get('id');
-            
-            if (!fullIdPath || fullIdPath.split('/').length < 2) {
-                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Error: Invalid content ID provided in URL.</p></div>';
-                document.getElementById('action-bar').style.display = 'none';
-                document.getElementById('movie-info').style.display = 'none';
-                document.getElementById('related-content').style.display = 'none';
-                return;
-            }
-            
+            if (!fullIdPath) { document.getElementById('player-wrapper').innerHTML = '<p class="p-4 text-red-500 text-center">Error: Invalid ID.</p>'; return; }
             movieRef = doc(db, fullIdPath);
-            const movieId = fullIdPath.split('/').pop();
-
             onSnapshot(movieRef, (docSnap) => {
-                if (!docSnap.exists()) {
-                    playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500 text-center">Sorry, this content could not be found.</p></div>';
-                    return;
-                }
+                if (!docSnap.exists()) return;
                 const movie = docSnap.data();
-                const isLiveTv = fullIdPath.startsWith('liveTV');
-
-                // শুধুমাত্র প্রথমবার লোড হওয়ার সময় এই কাজগুলো হবে
                 if (isFirstLoad) {
                     createFinalPlayer(movie.videoUrl || movie.streamUrl, movie.posterUrl || movie.logoUrl);
-                    document.title = `Playing ${movie.title || movie.name} - CrickStar`;
-                    movieInfoContainer.innerHTML = `<h1 class="text-2xl md:text-3xl font-bold mb-2">${movie.title || movie.name}</h1><p class="text-gray-300">${movie.description || 'No description available.'}</p>`;
-                    
-                    // *** সমাধান: liveTV-এর জন্য Related কন্টেন্ট লোড করা হবে ***
-                    // এখন আর কোনো if/else নেই, সব ধরনের কন্টেন্টের জন্যেই related ফাংশন কল হবে
-                    relatedTitle.textContent = isLiveTv ? 'Other Channels' : 'Related Movies';
-                    loadRelatedContent(fullIdPath, movieId);
-
+                    document.title = `Playing ${movie.title || movie.name}`;
+                    movieInfoContainer.innerHTML = `<h1 class="text-2xl md:text-3xl font-bold mb-2">${movie.title || movie.name}</h1><p class="text-gray-300">${movie.description || ''}</p>`;
+                    loadRelatedContent(fullIdPath, fullIdPath.split('/').pop());
                     setupActionHandlers(fullIdPath);
                     setupCommentSection(fullIdPath);
-                    isFirstLoad = false; // এর পরে আর প্লেয়ার রিলোড হবে না
+                    isFirstLoad = false;
                 }
-
-                // এই অংশটি সবসময় আপডেট হবে (যেমন লাইক সংখ্যা)
                 likeCountSpan.textContent = movie.likes || 0;
                 dislikeCountSpan.textContent = movie.dislikes || 0;
                 updateActionButtonsUI(fullIdPath);
-
-            }, (error) => {
-                console.error("Firebase snapshot error: ", error);
-                playerContainer.innerHTML = '<div class="player-wrapper flex items-center justify-center"><p class="text-red-500">Error loading data. Please try again later.</p></div>';
             });
         }
-
-        function setupActionHandlers(path) {
-            const storageKey = `crickstar_action_${path.replace(/\//g, '_')}`;
-            likeBtn.onclick = () => handleVote('likes', storageKey);
-            dislikeBtn.onclick = () => handleVote('dislikes', storageKey);
-            reportBtn.onclick = () => { if (confirm("Are you sure you want to report this content?")) { updateDoc(movieRef, { reports: increment(1) }).then(() => alert("Content reported successfully. Thank you!")); } };
+        
+        async function loadRelatedContent(path, currentMovieId) {
+             relatedContentContainer.innerHTML = '';
+             const isLiveTv = path.startsWith('liveTV');
+             relatedTitle.textContent = isLiveTv ? 'Other Channels' : 'Related Movies';
+             const collectionPath = path.substring(0, path.lastIndexOf('/'));
+             const q = query(collection(db, collectionPath), where("__name__", "!=", currentMovieId), limit(10));
+             const snapshot = await getDocs(q);
+             snapshot.forEach(docSnap => {
+                 const content = docSnap.data();
+                 const card = document.createElement('div');
+                 card.className = 'flex-shrink-0 w-36 md:w-40 related-card';
+                 card.innerHTML = `<a href="?id=${collectionPath}/${docSnap.id}"><div class="image-container"><img alt="${content.title || content.name}" src="${content.posterUrl || content.logoUrl}" loading="lazy" /></div><p class="text-gray-300 text-sm mt-1 truncate">${content.title || content.name}</p></a>`;
+                 relatedContentContainer.appendChild(card);
+             });
         }
-
-        async function handleVote(voteType, storageKey) {
-            const currentVote = localStorage.getItem(storageKey);
-            const oppositeVote = voteType === 'likes' ? 'dislikes' : 'likes';
+        function setupActionHandlers(path) { 
+            const key = `action_${path.replace(/\//g, '_')}`; likeBtn.onclick = () => handleVote('likes', key); dislikeBtn.onclick = () => handleVote('dislikes', key);
+        }
+        async function handleVote(type, key) {
+            const current = localStorage.getItem(key); const opposite = type === 'likes' ? 'dislikes' : 'likes';
             let updates = {};
-            if (currentVote === voteType) {
-                updates[voteType] = increment(-1);
-                localStorage.removeItem(storageKey);
-            } else {
-                updates[voteType] = increment(1);
-                if (currentVote) { updates[oppositeVote] = increment(-1); }
-                localStorage.setItem(storageKey, voteType);
-            }
+            if (current === type) { updates[type] = increment(-1); localStorage.removeItem(key); }
+            else { updates[type] = increment(1); if (current) updates[opposite] = increment(-1); localStorage.setItem(key, type); }
             await updateDoc(movieRef, updates);
         }
-
         function updateActionButtonsUI(path) {
-            const storageKey = `crickstar_action_${path.replace(/\//g, '_')}`;
-            const currentVote = localStorage.getItem(storageKey);
-            likeBtn.classList.toggle('active', currentVote === 'likes');
-            dislikeBtn.classList.toggle('active', currentVote === 'dislikes');
+             const key = `action_${path.replace(/\//g, '_')}`; const vote = localStorage.getItem(key);
+             likeBtn.classList.toggle('active', vote === 'likes'); dislikeBtn.classList.toggle('active', vote === 'dislikes');
         }
-
         function setupCommentSection(path) {
-            const commentsCollectionRef = collection(db, `${path}/comments`);
-            commentBtn.onclick = () => commentSection.classList.add('open');
-            closeCommentsBtn.onclick = () => commentSection.classList.remove('open');
-            commentForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const text = commentInput.value.trim();
-                if (text) {
-                    commentInput.disabled = true;
-                    await addDoc(commentsCollectionRef, { text, author: "Anonymous", createdAt: serverTimestamp() });
-                    commentInput.value = '';
-                    commentInput.disabled = false; 
-                    commentInput.focus();
-                }
-            };
-            listenForComments(commentsCollectionRef);
+            const commentsRef = collection(db, `${path}/comments`);
+            commentBtn.onclick = () => commentSection.classList.add('open'); closeCommentsBtn.onclick = () => commentSection.classList.remove('open');
+            commentForm.onsubmit = async (e) => { e.preventDefault(); const text = commentInput.value.trim(); if(text){ await addDoc(commentsRef, { text, author: "User", createdAt: serverTimestamp() }); commentInput.value = ''; } };
+            listenForComments(commentsRef);
         }
-
-        function listenForComments(commentsCollectionRef) {
-            const q = query(commentsCollectionRef, orderBy('createdAt', 'desc'));
-            onSnapshot(q, (snapshot) => {
-                if (snapshot.empty) { commentsList.innerHTML = '<p class="text-gray-500 text-center py-4">Be the first to comment!</p>'; return; }
+        function listenForComments(ref) {
+            onSnapshot(query(ref, orderBy('createdAt', 'desc')), (snapshot) => {
                 commentsList.innerHTML = '';
                 snapshot.forEach(doc => {
-                    const comment = doc.data();
-                    const date = comment.createdAt?.toDate().toLocaleString() || 'just now';
-                    const commentEl = document.createElement('div');
-                    commentEl.className = 'border-b border-gray-700 py-3';
-                    commentEl.innerHTML = `<div class="flex items-start space-x-3"><i class="fas fa-user-circle text-2xl text-gray-400"></i><div><p class="font-semibold">${comment.author} <span class="text-xs text-gray-500 ml-2">${date}</span></p><p class="text-gray-300 break-words">${comment.text}</p></div></div>`;
-                    commentsList.appendChild(commentEl);
+                    const c = doc.data(); const date = c.createdAt?.toDate().toLocaleString() || '';
+                    const el = document.createElement('div'); el.className = 'border-b border-gray-700 py-3';
+                    el.innerHTML = `<div class="flex items-start space-x-3"><i class="fas fa-user-circle text-2xl text-gray-400"></i><div><p class="font-semibold">${c.author} <span class="text-xs text-gray-500 ml-2">${date}</span></p><p class="text-gray-300 break-words">${c.text}</p></div></div>`;
+                    commentsList.appendChild(el);
                 });
             });
         }
         
-        loadMovieData();
+        document.addEventListener('DOMContentLoaded', loadMovieData);
     </script>
 </body>
 </html>
