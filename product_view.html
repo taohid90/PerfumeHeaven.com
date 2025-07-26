@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9,20 +8,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
---primary-color: #007bff;
---secondary-color: #6c757d;
---success-color: #28a745;
---danger-color: #dc3545;
---background-color: #f4f7f9;
---font-color: #212529;
---card-bg: #ffffff;
---border-color: #dee2e6;
---font-family: 'Poppins', sans-serif;
-}
+    :root {
+        --primary-color: #005f73;
+        --secondary-color: #6c757d;
+        --success-color: #2a9d8f;
+        --danger-color: #e76f51;
+        --background-color: #f8f9fa;
+        --font-color: #212529;
+        --card-bg: #ffffff;
+        --border-color: #dee2e6;
+        --font-family: 'Poppins', sans-serif;
+        --shadow-md: 0 6px 20px rgba(0,0,0,0.08);
+    }
 
-Generated code
-*, *::before, *::after {
+    *, *::before, *::after {
         box-sizing: border-box;
     }
 
@@ -56,7 +55,7 @@ Generated code
         background-color: var(--card-bg);
         padding: 20px;
         border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        box-shadow: var(--shadow-md);
     }
 
     @media (min-width: 768px) {
@@ -66,365 +65,112 @@ Generated code
         }
     }
 
-    .image-gallery {
-        display: flex;
-        flex-direction: column;
-    }
-    .main-image-container {
-        width: 100%;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid var(--border-color);
-    }
-    .main-image {
-        width: 100%;
-        display: block;
-        aspect-ratio: 1/1;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-    .main-image:hover {
-        transform: scale(1.05);
-    }
-    .thumbnail-container {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    }
-    .thumbnail {
-        width: 60px;
-        height: 60px;
-        border-radius: 6px;
-        cursor: pointer;
-        border: 2px solid transparent;
-        object-fit: cover;
-        transition: border-color 0.3s;
-    }
-    .thumbnail.active {
-        border-color: var(--primary-color);
-    }
+    .image-gallery { display: flex; flex-direction: column; }
+    .main-image-container { width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
+    .main-image { width: 100%; display: block; aspect-ratio: 1/1; object-fit: cover; transition: transform 0.3s ease; }
+    .main-image:hover { transform: scale(1.05); }
+    .thumbnail-container { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+    .thumbnail { width: 60px; height: 60px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; object-fit: cover; transition: border-color 0.3s; }
+    .thumbnail.active { border-color: var(--primary-color); }
 
-    .product-info h1 {
-        font-size: 28px;
-        font-weight: 600;
-        margin: 0 0 10px;
-    }
-    .product-price {
-        font-size: 24px;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 20px;
-    }
-    .product-description {
-        line-height: 1.7;
-        color: var(--secondary-color);
-        margin-bottom: 25px;
-    }
+    .product-info h1 { font-size: 28px; font-weight: 600; margin: 0 0 10px; }
+    .product-price { font-size: 24px; font-weight: 700; color: var(--primary-color); margin-bottom: 20px; }
+    .product-description { line-height: 1.7; color: var(--secondary-color); margin-bottom: 25px; }
     
-    .quantity-selector {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    
-    .quantity-selector label {
-        margin-right: 15px;
-        font-weight: 600;
-    }
-    .quantity-input {
-        width: 60px;
-        text-align: center;
-        padding: 8px;
+    /* Variant (Size) Selector */
+    .variant-selector { margin-bottom: 20px; }
+    .variant-selector label { font-weight: 600; display: block; margin-bottom: 10px; }
+    .variant-options { display: flex; flex-wrap: wrap; gap: 10px; }
+    .variant-option { display: inline-block; }
+    .variant-option input[type="radio"] { display: none; }
+    .variant-option .variant-label {
+        padding: 8px 16px;
         border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: 500;
-    }
-
-    .order-section {
-        background-color: var(--card-bg);
-        padding: 30px;
-        border-radius: 12px;
-        margin-top: 30px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        overflow: hidden;
-    }
-
-    #order-form {
-        position: relative;
-    }
-
-    .step-indicator {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        position: relative;
-    }
-
-    .step {
-        text-align: center;
-        flex-grow: 1;
-        position: relative;
-        z-index: 2;
-    }
-    .step-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #e9ecef;
-        border: 2px solid var(--border-color);
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 600;
-        color: var(--secondary-color);
-        transition: all 0.4s ease;
-    }
-    .step-label {
-        margin-top: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--secondary-color);
-    }
-    .step.active .step-icon, .step.finish .step-icon {
-        background-color: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
-    .step.active .step-label, .step.finish .step-label {
-         color: var(--primary-color);
-    }
-
-    .step-indicator::before {
-        content: '';
-        position: absolute;
-        top: 20px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background-color: var(--border-color);
-        z-index: 1;
-    }
-    #progress-bar {
-        position: absolute;
-        top: 20px;
-        left: 0;
-        height: 2px;
-        background-color: var(--primary-color);
-        z-index: 1;
-        width: 0%;
-        transition: width 0.4s ease;
-    }
-    
-    .form-step {
-        display: none;
-        animation: fadeIn 0.5s;
-    }
-    .form-step.active {
-        display: block;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 20px;
-    }
-    .form-group label {
-        margin-bottom: 8px;
-        font-weight: 600;
-    }
-    .form-group input, .form-group select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 16px;
-        font-family: var(--font-family);
-    }
-    .form-group input:focus, .form-group select:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-    }
-    .form-group input.invalid {
-        border-color: var(--danger-color);
-    }
-
-    .payment-module {
-        margin-top: 30px;
-        border: 1px dashed var(--primary-color);
-        padding: 20px;
-        border-radius: 8px;
-    }
-    .payment-methods {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    .payment-method {
-        padding: 10px;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
+        border-radius: 20px;
         cursor: pointer;
         transition: all 0.3s ease;
-    }
-    .payment-method img {
-        height: 40px;
-        display: block;
-    }
-    .payment-method.active {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
-    }
-    .payment-instructions {
-        background-color: var(--background-color);
-        padding: 15px;
-        border-radius: 6px;
-        text-align: center;
-    }
-    .payment-number-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-    .payment-instructions strong {
-        font-size: 20px;
-        color: var(--primary-color);
-        user-select: all;
-    }
-    .copy-btn {
-        background: none;
-        border: 1px solid var(--primary-color);
-        color: var(--primary-color);
-        border-radius: 4px;
-        padding: 4px 8px;
-        cursor: pointer;
-        font-size: 12px;
-    }
-    
-    .order-review-summary, .totals-summary {
-        margin: 20px 0;
-        padding: 20px;
-        background-color: var(--background-color);
-        border-radius: 8px;
-    }
-    .order-review-summary h4 {
-        margin-top: 0;
-        margin-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 10px;
-    }
-    .review-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-    }
-    .review-item span:first-child {
         font-weight: 500;
-        color: var(--secondary-color);
     }
-    
-    .totals-summary p {
-        display: flex;
-        justify-content: space-between;
-        margin: 10px 0;
-        font-size: 16px;
-    }
-    .totals-summary .grand-total {
-        font-weight: bold;
-        font-size: 20px;
-        border-top: 2px solid var(--border-color);
-        padding-top: 10px;
-        margin-top: 10px;
-    }
-
-    .form-navigation-btns {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 30px;
-    }
-
-    .btn {
-        display: inline-block;
-        padding: 12px 25px;
-        font-size: 16px;
-        font-weight: 600;
-        text-align: center;
-        cursor: pointer;
-        border: none;
-        border-radius: 6px;
-        transition: all 0.3s;
-    }
-    .btn-primary {
+    .variant-option input[type="radio"]:checked + .variant-label {
         background-color: var(--primary-color);
         color: white;
-    }
-    .btn-secondary {
-        background-color: var(--secondary-color);
-        color: white;
-    }
-    .btn-success {
-        background-color: var(--success-color);
-        color: white;
-    }
-    .btn:disabled {
-        background-color: #ced4da;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-    .btn-prev {
-        visibility: hidden;
+        border-color: var(--primary-color);
     }
 
-    #order-success-message {
-        display: none;
-        text-align: center;
-        padding: 40px;
-        background-color: #e9f7ef;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-        border-radius: 8px;
-    }
-    #order-success-message h2 {
-        margin-top: 0;
-    }
+    .quantity-selector { display: flex; align-items: center; margin-bottom: 20px; }
+    .quantity-selector label { margin-right: 15px; font-weight: 600; }
+    .quantity-input { width: 60px; text-align: center; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 16px; font-weight: 500; }
+
+    .order-section { background-color: var(--card-bg); padding: 30px; border-radius: 12px; margin-top: 30px; box-shadow: var(--shadow-md); overflow: hidden; }
+    #order-form { position: relative; }
+
+    .step-indicator { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
+    .step { text-align: center; flex-grow: 1; position: relative; z-index: 2; }
+    .step-icon { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; border: 2px solid var(--border-color); display: inline-flex; justify-content: center; align-items: center; font-weight: 600; color: var(--secondary-color); transition: all 0.4s ease; }
+    .step-label { margin-top: 8px; font-size: 14px; font-weight: 500; color: var(--secondary-color); }
+    .step.active .step-icon, .step.finish .step-icon { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
+    .step.active .step-label, .step.finish .step-label { color: var(--primary-color); }
+    .step-indicator::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background-color: var(--border-color); z-index: 1; }
+    #progress-bar { position: absolute; top: 20px; left: 0; height: 2px; background-color: var(--primary-color); z-index: 1; width: 0%; transition: width 0.4s ease; }
     
-    #toast-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+    .form-step { display: none; animation: fadeIn 0.5s; }
+    .form-step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .toast {
-        padding: 15px 20px;
-        border-radius: 6px;
-        color: white;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    .form-group { display: flex; flex-direction: column; margin-bottom: 20px; }
+    .form-group label { margin-bottom: 8px; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 16px; font-family: var(--font-family); }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(0, 95, 115, 0.25); }
+    .form-group input.invalid { border-color: var(--danger-color); }
+
+    /* Payment Options */
+    .payment-option-selector { margin-bottom: 20px; }
+    .payment-option-selector .option {
+        padding: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
     }
-    .toast.show {
-        opacity: 1;
-        transform: translateX(0);
+    .payment-option-selector .option.active {
+        border-color: var(--primary-color);
+        background-color: #e6f7ff;
     }
+    .payment-option-selector .option-title { font-weight: 600; }
+
+    .payment-module { margin-top: 20px; border: 1px dashed var(--primary-color); padding: 20px; border-radius: 8px; }
+    .payment-methods { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+    .payment-method { padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+    .payment-method img { height: 40px; display: block; }
+    .payment-method.active { border-color: var(--primary-color); box-shadow: 0 0 10px rgba(0, 95, 115, 0.3); }
+    .payment-instructions { background-color: var(--background-color); padding: 15px; border-radius: 6px; text-align: center; }
+    .payment-number-wrapper { display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .payment-instructions strong { font-size: 20px; color: var(--primary-color); user-select: all; }
+    .copy-btn { background: none; border: 1px solid var(--primary-color); color: var(--primary-color); border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
+    
+    .order-review-summary, .totals-summary { margin: 20px 0; padding: 20px; background-color: var(--background-color); border-radius: 8px; }
+    .order-review-summary h4 { margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .review-item { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    
+    .totals-summary p { display: flex; justify-content: space-between; margin: 10px 0; font-size: 16px; }
+    .totals-summary .grand-total { font-weight: bold; font-size: 20px; border-top: 2px solid var(--border-color); padding-top: 10px; margin-top: 10px; }
+
+    .form-navigation-btns { display: flex; justify-content: space-between; margin-top: 30px; }
+    .btn { display: inline-block; padding: 12px 25px; font-size: 16px; font-weight: 600; text-align: center; cursor: pointer; border: none; border-radius: 6px; transition: all 0.3s; }
+    .btn-primary { background-color: var(--primary-color); color: white; }
+    .btn-secondary { background-color: var(--secondary-color); color: white; }
+    .btn-success { background-color: var(--success-color); color: white; }
+    .btn:disabled { background-color: #ced4da; cursor: not-allowed; opacity: 0.7; }
+    .btn-prev { visibility: hidden; }
+
+    #order-success-message { display: none; text-align: center; padding: 40px; background-color: #e9f7ef; color: #155724; border: 1px solid #c3e6cb; border-radius: 8px; }
+    
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+    .toast { padding: 15px 20px; border-radius: 6px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.15); opacity: 0; transform: translateX(100%); transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+    .toast.show { opacity: 1; transform: translateX(0); }
     .toast.success { background-color: var(--success-color); }
     .toast.error { background-color: var(--danger-color); }
-    .toast.info { background-color: var(--primary-color); }
 </style>
-
 </head>
 <body>
 <div class="container">
@@ -441,6 +187,15 @@ Generated code
             <div class="product-info">
                 <h1 id="product-title"></h1>
                 <p class="product-price" id="product-price"></p>
+                
+                <!-- Variant Selector -->
+                <div class="variant-selector">
+                    <label for="variants">Select Size:</label>
+                    <div id="variant-options-container" class="variant-options">
+                        <!-- Variants will be injected here -->
+                    </div>
+                </div>
+
                 <div class="quantity-selector">
                     <label for="quantity">Quantity:</label>
                     <input type="number" id="quantity" class="quantity-input" value="1" min="1">
@@ -455,20 +210,18 @@ Generated code
                      <div class="step-indicator">
                         <div id="progress-bar"></div>
                         <div class="step active" data-step="1">
-                            <div class="step-icon">1</div>
-                            <div class="step-label">Shipping</div>
+                            <div class="step-icon">1</div><div class="step-label">Shipping</div>
                         </div>
                         <div class="step" data-step="2">
-                            <div class="step-icon">2</div>
-                            <div class="step-label">Payment</div>
+                            <div class="step-icon">2</div><div class="step-label">Payment</div>
                         </div>
                         <div class="step" data-step="3">
-                            <div class="step-icon">3</div>
-                            <div class="step-label">Review</div>
+                            <div class="step-icon">3</div><div class="step-label">Review</div>
                         </div>
                     </div>
 
                     <div class="form-step active" id="step-1">
+                        <!-- Shipping Details Form (same as before) -->
                         <h3 style="text-align: center; margin-bottom: 20px;">Enter Your Shipping Details</h3>
                          <div class="form-group">
                             <label for="customer-name">Full Name</label>
@@ -491,47 +244,44 @@ Generated code
                     </div>
 
                     <div class="form-step" id="step-2">
+                        <!-- Payment Options & Details -->
+                        <h3 style="text-align: center; margin-bottom: 20px;">Choose Your Payment Option</h3>
+                        <div class="payment-option-selector" id="payment-option-selector">
+                            <div class="option active" data-type="advance">
+                                <label>
+                                    <input type="radio" name="paymentOption" value="advance" checked>
+                                    <span class="option-title">Pay Delivery Charge Only (Advance)</span>
+                                    <p>Confirm your order by paying the <strong>BDT 110</strong> delivery charge now.</p>
+                                </label>
+                            </div>
+                            <div class="option" data-type="full">
+                                <label>
+                                    <input type="radio" name="paymentOption" value="full">
+                                    <span class="option-title">Pay Full Amount</span>
+                                    <p>Pay the total amount <strong id="full-payment-amount-label"></strong> now and get your product.</p>
+                                </label>
+                            </div>
+                        </div>
+                        
                         <div class="payment-module">
-                            <div class="payment-header">
-                                <h3>Pay Delivery Charge in Advance</h3>
-                                <p>To confirm your order, please pay the delivery charge (BDT 110) now.</p>
-                            </div>
                             <div class="payment-methods">
-                                <div class="payment-method active" data-method="bKash">
-                                    <img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png" alt="bKash">
-                                </div>
-                                <div class="payment-method" data-method="Nagad">
-                                    <img src="https://freepnglogo.com/images/all_img/1725618764nagad-horizontal-logo-png.png" alt="Nagad">
-                                </div>
+                                <!-- bKash/Nagad selection (same as before) -->
+                                <div class="payment-method active" data-method="bKash"><img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png" alt="bKash"></div>
+                                <div class="payment-method" data-method="Nagad"><img src="https://freepnglogo.com/images/all_img/1725618764nagad-horizontal-logo-png.png" alt="Nagad"></div>
                             </div>
-                            <div id="bkash-instructions" class="payment-instructions">
-                                <p>Send Money <strong>BDT 110</strong> to this bKash number:</p>
-                                <div class="payment-number-wrapper">
-                                    <strong id="bkash-number">01798796479</strong>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard('bkash-number')">Copy</button>
-                                </div>
-                            </div>
-                            <div id="nagad-instructions" class="payment-instructions" style="display: none;">
-                                <p>Send Money <strong>BDT 110</strong> to this Nagad number:</p>
-                                <div class="payment-number-wrapper">
-                                    <strong id="nagad-number">01798796479</strong>
-                                    <button type="button" class="copy-btn" onclick="copyToClipboard('nagad-number')">Copy</button>
-                                </div>
-                            </div>
+                            <!-- Payment Instructions (will be updated dynamically) -->
+                            <div id="payment-instructions" class="payment-instructions"></div>
+                            
                             <div class="payment-form">
-                               <div class="form-group">
-                                    <label for="transaction-id">Transaction ID (TrxID)</label>
-                                    <input type="text" id="transaction-id" required placeholder="enter">
-                               </div>
-                               <div class="form-group">
-                                    <label for="payer-number">Your <span id="payment-method-name">bKash</span> Number</label>
-                                    <input type="tel" id="payer-number" required placeholder="যে নম্বর দিয়ে পাঠিয়েছেন">
-                               </div>
+                               <!-- TrxID and Payer Number (same as before) -->
+                               <div class="form-group"><label for="transaction-id">Transaction ID (TrxID)</label><input type="text" id="transaction-id" required></div>
+                               <div class="form-group"><label for="payer-number">Your <span id="payment-method-name">bKash</span> Number</label><input type="tel" id="payer-number" required></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-step" id="step-3">
+                        <!-- Review Step (will be populated dynamically) -->
                         <h3 style="text-align: center; margin-bottom: 20px;">Review Your Order</h3>
                          <div class="order-review-summary">
                             <h4>Shipping Information</h4>
@@ -541,15 +291,23 @@ Generated code
                             <div class="review-item"><span>Division:</span> <span id="review-division"></span></div>
                         </div>
                         <div class="order-review-summary">
+                            <h4>Order Details</h4>
+                            <div class="review-item"><span>Product:</span> <span id="review-product"></span></div>
+                            <div class="review-item"><span>Size:</span> <span id="review-size"></span></div>
+                            <div class="review-item"><span>Quantity:</span> <span id="review-quantity"></span></div>
+                        </div>
+                        <div class="order-review-summary">
                             <h4>Payment Information</h4>
+                            <div class="review-item"><span>Payment Type:</span> <span id="review-payment-type"></span></div>
                             <div class="review-item"><span>Method:</span> <span id="review-payment-method"></span></div>
                             <div class="review-item"><span>TrxID:</span> <span id="review-trxid"></span></div>
                             <div class="review-item"><span>Payer No:</span> <span id="review-payer-no"></span></div>
                         </div>
                         <div class="totals-summary">
-                            <p><span>Subtotal</span> <span id="summary-subtotal">BDT 0.00</span></p>
-                            <p><span>Delivery Charge</span> <span id="summary-delivery">BDT 110.00</span></p>
-                            <p class="grand-total"><span>Total</span> <span id="summary-total">BDT 110.00</span></p>
+                            <p><span>Subtotal</span> <span id="summary-subtotal"></span></p>
+                            <p><span>Delivery Charge</span> <span id="summary-delivery"></span></p>
+                            <p class="grand-total"><span>Total Payable</span> <span id="summary-total"></span></p>
+                            <p><span>Amount Paid Now</span> <span id="summary-paid-now"></span></p>
                         </div>
                     </div>
 
@@ -572,8 +330,9 @@ Generated code
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+    // --- Firebase Config (same as before) ---
     const firebaseConfig = {
-         apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY",
+        apiKey: "AIzaSyAb8YsPMOY53GxiycCL6G0MPZdgWe3nnyY",
         authDomain: "movie-92659.firebaseapp.com",
         databaseURL: "https://movie-92659-default-rtdb.firebaseio.com",
         projectId: "movie-92659",
@@ -585,71 +344,53 @@ Generated code
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // --- State Variables ---
     let currentProduct = null;
+    let selectedVariant = null;
     let currentStep = 1;
     const TOTAL_STEPS = 3;
     const DELIVERY_CHARGE = 110;
+    const BKASH_NUMBER = "01798796479";
+    const NAGAD_NUMBER = "01798796479";
 
+    // --- DOM Elements ---
     const loadingState = document.getElementById('loading-state');
     const productContent = document.getElementById('product-content');
     const mainImage = document.getElementById('main-product-image');
     const thumbnailContainer = document.getElementById('thumbnail-container');
     const productTitle = document.getElementById('product-title');
-    const productPrice = document.getElementById('product-price');
+    const productPriceEl = document.getElementById('product-price');
     const productDescription = document.getElementById('product-description');
+    const variantContainer = document.getElementById('variant-options-container');
     const quantityInput = document.getElementById('quantity');
-    const paymentMethods = document.querySelectorAll('.payment-method');
+    const paymentOptionSelector = document.getElementById('payment-option-selector');
     
     const bdDivisions = ["Dhaka", "Chattogram", "Khulna", "Rajshahi", "Barishal", "Sylhet", "Rangpur", "Mymensingh"];
 
+    // --- Helper Functions ---
     const showToast = (message, type = 'info') => {
-        const toastContainer = document.getElementById('toast-container');
+        const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.textContent = message;
-        toastContainer.appendChild(toast);
-        
+        container.appendChild(toast);
         setTimeout(() => toast.classList.add('show'), 10);
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => toast.remove(), 500);
         }, 3000);
     };
-    
-    window.copyToClipboard = (elementId) => {
-        const text = document.getElementById(elementId).innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            showToast('Number copied successfully!', 'success');
-        }, (err) => {
-            showToast('Failed to copy number.', 'error');
-        });
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => showToast('Number copied!', 'success'), () => showToast('Copy failed.', 'error'));
     };
 
-    const populateLocationDropdowns = () => {
-        const divisionSelect = document.getElementById('customer-division');
-        bdDivisions.forEach(division => {
-            divisionSelect.innerHTML += `<option value="${division}">${division}</option>`;
-        });
-    };
-
-    const updateTotals = () => {
-        const quantity = parseInt(quantityInput.value) || 1;
-        if (!currentProduct) return;
-        
-        const subtotal = currentProduct.price * quantity;
-        const total = subtotal + DELIVERY_CHARGE;
-        
-        document.getElementById('summary-subtotal').textContent = `BDT ${subtotal.toFixed(2)}`;
-        document.getElementById('summary-delivery').textContent = `BDT ${DELIVERY_CHARGE.toFixed(2)}`;
-        document.getElementById('summary-total').textContent = `BDT ${total.toFixed(2)}`;
-    };
-
+    // --- Core Logic ---
     const loadProduct = async (productId) => {
         if (!productId) {
-            loadingState.textContent = 'Product ID not found. Please navigate from the shop page.';
+            loadingState.textContent = 'Product not found. Please navigate from the shop page.';
             return;
         }
-
         try {
             const snapshot = await get(ref(db, `products/${productId}`));
             if (snapshot.exists()) {
@@ -662,17 +403,16 @@ Generated code
             }
         } catch (error) {
             loadingState.textContent = 'Failed to load product details.';
+            console.error(error);
         }
     };
 
     const displayProductDetails = (product) => {
         document.title = product.title;
         productTitle.textContent = product.title;
-        productPrice.textContent = `BDT ${product.price}`;
         productDescription.innerHTML = product.description.replace(/\n/g, '<br>');
 
         const images = product.imageUrls && product.imageUrls.length > 0 ? product.imageUrls : [product.imageUrl];
-        
         mainImage.src = images[0];
         thumbnailContainer.innerHTML = '';
         images.forEach((imgUrl, index) => {
@@ -680,52 +420,100 @@ Generated code
             thumb.src = imgUrl;
             thumb.className = 'thumbnail';
             if (index === 0) thumb.classList.add('active');
-            thumb.addEventListener('click', () => {
+            thumb.onclick = () => {
                 mainImage.src = imgUrl;
                 document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
                 thumb.classList.add('active');
-            });
+            };
             thumbnailContainer.appendChild(thumb);
         });
-        updateTotals();
+        
+        // Display variants
+        variantContainer.innerHTML = '';
+        if (product.variants) {
+            Object.keys(product.variants).forEach((key, index) => {
+                const variant = product.variants[key];
+                const option = document.createElement('div');
+                option.className = 'variant-option';
+                option.innerHTML = `
+                    <input type="radio" id="variant-${key}" name="productVariant" value="${key}" ${index === 0 ? 'checked' : ''}>
+                    <label class="variant-label" for="variant-${key}">${variant.name}</label>
+                `;
+                variantContainer.appendChild(option);
+            });
+
+            document.querySelectorAll('input[name="productVariant"]').forEach(radio => {
+                radio.onchange = updatePrice;
+            });
+
+            // Set initial price
+            updatePrice();
+        } else {
+            // Handle products without variants
+            productPriceEl.textContent = `BDT ${product.price}`;
+            document.querySelector('.variant-selector').style.display = 'none';
+        }
+
+        updatePaymentStepUI();
     };
 
-    const updateStepIndicator = () => {
-        const steps = document.querySelectorAll('.step');
-        const progressBar = document.getElementById('progress-bar');
+    const updatePrice = () => {
+        const selectedRadio = document.querySelector('input[name="productVariant"]:checked');
+        if (!selectedRadio) return;
         
-        steps.forEach((step, index) => {
-            const stepNum = index + 1;
-            step.classList.remove('active', 'finish');
-            if (stepNum < currentStep) {
-                step.classList.add('finish');
-            } else if (stepNum === currentStep) {
-                step.classList.add('active');
-            }
-        });
+        const variantKey = selectedRadio.value;
+        selectedVariant = currentProduct.variants[variantKey];
+        
+        productPriceEl.textContent = `BDT ${selectedVariant.price}`;
+        updatePaymentStepUI();
+    };
+    
+    const updatePaymentStepUI = () => {
+        const quantity = parseInt(quantityInput.value) || 1;
+        if (!selectedVariant) return;
 
+        const subtotal = selectedVariant.price * quantity;
+        const total = subtotal + DELIVERY_CHARGE;
+        
+        document.getElementById('full-payment-amount-label').textContent = `(BDT ${total.toFixed(2)})`;
+        
+        const paymentType = document.querySelector('input[name="paymentOption"]:checked').value;
+        const amountToPay = paymentType === 'full' ? total : DELIVERY_CHARGE;
+
+        const activePaymentMethod = document.querySelector('.payment-method.active').dataset.method;
+        const number = activePaymentMethod === 'bKash' ? BKASH_NUMBER : NAGAD_NUMBER;
+        
+        const instructionsEl = document.getElementById('payment-instructions');
+        instructionsEl.innerHTML = `
+            <p>Send Money <strong>BDT ${amountToPay.toFixed(2)}</strong> to this ${activePaymentMethod} number:</p>
+            <div class="payment-number-wrapper">
+                <strong id="payment-number">${number}</strong>
+                <button type="button" class="copy-btn">Copy</button>
+            </div>
+        `;
+        instructionsEl.querySelector('.copy-btn').onclick = () => copyToClipboard(number);
+    };
+
+    // --- Form Navigation & Validation ---
+    const updateStepIndicator = () => {
+        document.querySelectorAll('.step').forEach((step, index) => {
+            step.classList.remove('active', 'finish');
+            if (index + 1 < currentStep) step.classList.add('finish');
+            else if (index + 1 === currentStep) step.classList.add('active');
+        });
         const progressPercentage = ((currentStep - 1) / (TOTAL_STEPS - 1)) * 100;
-        progressBar.style.width = `${progressPercentage}%`;
+        document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
     };
     
     const showStep = (stepNumber) => {
         document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
         document.getElementById(`step-${stepNumber}`).classList.add('active');
         
-        const prevBtn = document.querySelector('.btn-prev');
+        document.querySelector('.btn-prev').style.visibility = stepNumber === 1 ? 'hidden' : 'visible';
         const nextBtn = document.querySelector('.btn-next');
-
-        prevBtn.style.visibility = stepNumber === 1 ? 'hidden' : 'visible';
-
-        if (stepNumber === TOTAL_STEPS) {
-            nextBtn.textContent = 'Confirm Order';
-            nextBtn.classList.remove('btn-primary');
-            nextBtn.classList.add('btn-success');
-        } else {
-            nextBtn.textContent = 'Next';
-            nextBtn.classList.remove('btn-success');
-            nextBtn.classList.add('btn-primary');
-        }
+        nextBtn.textContent = (stepNumber === TOTAL_STEPS) ? 'Confirm Order' : 'Next';
+        nextBtn.classList.toggle('btn-success', stepNumber === TOTAL_STEPS);
+        nextBtn.classList.toggle('btn-primary', stepNumber !== TOTAL_STEPS);
 
         updateStepIndicator();
     };
@@ -734,58 +522,65 @@ Generated code
         let isValid = true;
         document.querySelectorAll(`#step-${stepNumber} [required]`).forEach(input => {
             input.classList.remove('invalid');
-            let isFieldValid = true;
-
-            if (input.type === 'tel' && input.id === 'customer-phone') {
-                isFieldValid = /^01[3-9]\d{8}$/.test(input.value);
-            } else {
-                isFieldValid = input.value.trim() !== '';
-            }
-
-            if (!isFieldValid) {
+            if (!input.value.trim()) {
                 input.classList.add('invalid');
                 isValid = false;
             }
         });
-        if (!isValid) showToast('Please fill all required fields correctly.', 'error');
+        if (!isValid) showToast('Please fill all required fields.', 'error');
         return isValid;
     };
 
     const populateReviewStep = () => {
+        const quantity = parseInt(quantityInput.value) || 1;
+        const subtotal = selectedVariant.price * quantity;
+        const total = subtotal + DELIVERY_CHARGE;
+        const paymentType = document.querySelector('input[name="paymentOption"]:checked').value;
+        const amountPaidNow = paymentType === 'full' ? total : DELIVERY_CHARGE;
+
         document.getElementById('review-name').textContent = document.getElementById('customer-name').value;
         document.getElementById('review-phone').textContent = document.getElementById('customer-phone').value;
         document.getElementById('review-address').textContent = document.getElementById('customer-address').value;
         document.getElementById('review-division').textContent = document.getElementById('customer-division').value;
+        
+        document.getElementById('review-product').textContent = currentProduct.title;
+        document.getElementById('review-size').textContent = selectedVariant.name;
+        document.getElementById('review-quantity').textContent = quantity;
+        
+        document.getElementById('review-payment-type').textContent = paymentType === 'full' ? 'Full Payment' : 'Advance (Delivery Charge)';
         document.getElementById('review-payment-method').textContent = document.querySelector('.payment-method.active').dataset.method;
         document.getElementById('review-trxid').textContent = document.getElementById('transaction-id').value;
         document.getElementById('review-payer-no').textContent = document.getElementById('payer-number').value;
-        updateTotals();
+
+        document.getElementById('summary-subtotal').textContent = `BDT ${subtotal.toFixed(2)}`;
+        document.getElementById('summary-delivery').textContent = `BDT ${DELIVERY_CHARGE.toFixed(2)}`;
+        document.getElementById('summary-total').textContent = `BDT ${total.toFixed(2)}`;
+        document.getElementById('summary-paid-now').textContent = `BDT ${amountPaidNow.toFixed(2)}`;
     };
     
     window.nextPrev = (n) => {
         if (n > 0 && !validateStep(currentStep)) return;
-
         currentStep += n;
-
         if (currentStep > TOTAL_STEPS) {
             handleOrderSubmit();
             return;
         }
-
-        if(currentStep === TOTAL_STEPS) {
+        if (currentStep === TOTAL_STEPS) {
             populateReviewStep();
         }
-
         showStep(currentStep);
     };
 
-    const handleOrderSubmit = () => {
+    const handleOrderSubmit = async () => {
         const confirmBtn = document.querySelector('.btn-next');
         confirmBtn.disabled = true;
         confirmBtn.textContent = 'Processing...';
 
         const quantity = parseInt(quantityInput.value) || 1;
-        const subtotal = currentProduct.price * quantity;
+        const subtotal = selectedVariant.price * quantity;
+        const totalAmount = subtotal + DELIVERY_CHARGE;
+        const paymentType = document.querySelector('input[name="paymentOption"]:checked').value;
+        const amountPaid = paymentType === 'full' ? totalAmount : DELIVERY_CHARGE;
 
         const orderData = {
             customerInfo: {
@@ -797,61 +592,63 @@ Generated code
             items: [{
                 id: currentProduct.id,
                 title: currentProduct.title,
-                price: currentProduct.price,
+                variant: selectedVariant,
                 quantity: quantity,
                 imageUrl: currentProduct.imageUrl
             }],
             paymentInfo: {
+                type: paymentType,
                 method: document.querySelector('.payment-method.active').dataset.method,
-                status: 'Paid Delivery Charge',
                 transactionId: document.getElementById('transaction-id').value,
                 payerNumber: document.getElementById('payer-number').value,
-                amountPaid: DELIVERY_CHARGE
+                amountPaid: amountPaid
             },
             deliveryCharge: DELIVERY_CHARGE,
             subtotal: subtotal,
-            totalAmount: subtotal + DELIVERY_CHARGE,
+            totalAmount: totalAmount,
             status: 'Pending',
             orderDate: new Date().toISOString()
         };
         
-        set(push(ref(db, 'orders')), orderData)
-            .then(() => {
-                document.getElementById('order-form-container').style.display = 'none';
-                document.getElementById('order-success-message').style.display = 'block';
-            })
-            .catch(error => {
-                showToast('Order failed. Please try again.', 'error');
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Confirm Order';
-            });
+        try {
+            await set(push(ref(db, 'orders')), orderData);
+            document.getElementById('order-form-container').style.display = 'none';
+            document.getElementById('order-success-message').style.display = 'block';
+        } catch (error) {
+            showToast('Order failed. Please try again.', 'error');
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Confirm Order';
+        }
     };
-
+    
+    // --- Initializers & Event Listeners ---
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         loadProduct(urlParams.get('id'));
-        populateLocationDropdowns();
+        
+        const divisionSelect = document.getElementById('customer-division');
+        bdDivisions.forEach(division => divisionSelect.innerHTML += `<option value="${division}">${division}</option>`);
+        
         showStep(currentStep);
     });
 
-    quantityInput.addEventListener('input', updateTotals);
+    quantityInput.addEventListener('input', updatePaymentStepUI);
+    paymentOptionSelector.addEventListener('click', (e) => {
+        const targetOption = e.target.closest('.option');
+        if (targetOption) {
+            document.querySelectorAll('.payment-option-selector .option').forEach(opt => opt.classList.remove('active'));
+            targetOption.classList.add('active');
+            targetOption.querySelector('input[type="radio"]').checked = true;
+            updatePaymentStepUI();
+        }
+    });
 
-    paymentMethods.forEach(method => {
+    document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', () => {
-            paymentMethods.forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
             method.classList.add('active');
-
-            const selectedMethod = method.dataset.method;
-            const methodNameSpan = document.getElementById('payment-method-name');
-            if (selectedMethod === 'bKash') {
-                document.getElementById('bkash-instructions').style.display = 'block';
-                document.getElementById('nagad-instructions').style.display = 'none';
-                methodNameSpan.textContent = 'bKash';
-            } else {
-                document.getElementById('bkash-instructions').style.display = 'none';
-                document.getElementById('nagad-instructions').style.display = 'block';
-                methodNameSpan.textContent = 'Nagad';
-            }
+            document.getElementById('payment-method-name').textContent = method.dataset.method;
+            updatePaymentStepUI();
         });
     });
 
